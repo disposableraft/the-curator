@@ -28,7 +28,7 @@ def output(data, exh_id):
     artist_names = artists['DisplayName'].tolist()
 
     # If the exh has lots of artists, then peace out
-    if len(artist_names) > 25:
+    if len(artist_names) > 50:
         return None
 
     # Get all combinations in sets of 5
