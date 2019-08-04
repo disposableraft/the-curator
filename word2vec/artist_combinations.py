@@ -14,6 +14,11 @@ def format_name(name):
     return '_'.join(name.split(' ')).lower()
 
 
+def get_exh_numbers(data):
+    """Return an array of exhibition numbers"""
+    return list(data.ExhibitionNumber.unique())
+
+
 def output(data, exh_id):
     """Save a file"""
     # Select the rows with exhibition ID
@@ -33,11 +38,14 @@ def output(data, exh_id):
     f.close()
 
 
-p = Path('../moma/exhibitions/MoMAExhibitions1929to1989.csv')
+p = Path('~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv')
 d = pd.read_csv(p)
 
+exh_numbers = get_exh_numbers(d)
+# Remove the wierd placeholder show
+exh_numbers.remove('No#')
 
 # Output combinations for the first 10 exhibitions
-for i in range(1, 10):
+for i in exh_numbers:
     print(f"outputing exh_id {i}")
     output(d, i)
