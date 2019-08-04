@@ -27,6 +27,10 @@ def output(data, exh_id):
     artists = exh.loc[exh['ExhibitionRole'] == 'Artist']
     artist_names = artists['DisplayName'].tolist()
 
+    # If the exh has lots of artists, then peace out
+    if len(artist_names) > 25:
+        return None
+
     # Get all combinations in sets of 5
     combos = combinations(artist_names, 5)
     print(f"artist_names: {artist_names}")
