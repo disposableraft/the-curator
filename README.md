@@ -30,3 +30,6 @@ Out:
 
 This yields surprising results when looking at the similarities between artists. For instance, John Cage is in seven exhibitions. Out of those seven shows, three artists appeared four times: Robert Morris, Sol LeWitt, and William T. Wiley. Because of this one might assume those four are closer to Cage than others but they are not. The closest in similarity according to the model is Art & Language! Out of these four, Wiley has the closest similarity (~0.5). But Wiley falls in place 18 when looking at the 20 most similar artists. Moreover, before Wiley, falling at place 14 is Kazuko, who does not share even one exhibition with Cage. (Leon Polk Smith, at place 20 from Cage, also does not share an exhibition.)
 
+## DATA
+
+- artist_combinations.txt.gz is the first one generated. It was created using the combinations described above.
