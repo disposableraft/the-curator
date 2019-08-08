@@ -1,55 +1,90 @@
 """Generate text files for artist permutations"""
 
-from pathlib import Path
-from itertools import combinations
 import pandas as pd
-
-def format_line(tup):
-    """Return a string of five names joined with underscores"""
-    return ' '.join([format_name(t) for t in tup])
+import itertools
 
 
-def format_name(name):
-    """Join a name with an underscore"""
-    return '_'.join(name.split(' ')).lower()
+class ExhibitionData:
+    def __init__(self, csv_path, outfile):
+        self.data = pd.read_csv(csv_path)
+        self.outfile = outfile
+
+    def format_name(self, name):
+        "Join a name with an underscore"
+        return "_".join(name.split(" ")).lower()
+
+    def format_line(self, tup):
+        "Return a string of n names joined with underscores"
+        return " ".join([self.format_name(t) for t in tup])
+
+    def exhibition_numbers(self, startstop=None):
+        """
+        Return a list of exhibition numbers.
+        count: By default return all of them.
+        """
+        unique_numbers = list(self.data.ExhibitionNumber.unique())
+        if not startstop:
+            return unique_numbers
+        else:
+            start, stop = startstop
+            return unique_numbers[start:stop]
+
+    def exhibition_artists(self, exh_number):
+        "Return a list of artists given an exhibition number"
+        exh = self.data.loc[self.data["ExhibitionNumber"] == str(exh_number)]
+        # From that take only the artists (leaving the curators)
+        artists = exh.loc[exh["ExhibitionRole"] == "Artist"]
+        return artists["DisplayName"].tolist()
+
+    def combinations(self, i, r=5):
+        return itertools.combinations(i, r)
+
+    def append_to_outfile(self, i):
+        if len(i) == 0:
+            return None
+
+        with open(self.outfile, "a") as f:
+            # There's probably a better way to do this. For tuples we want
+            # a loop, for lists we just want to write it out.
+            if type(i) == tuple:
+                for c in i:
+                    f.write(f"{self.format_line(c)}\n")
+            else:
+                f.write(f"{self.format_line(i)}\n")
+        f.close()
 
 
-def get_exh_numbers(data):
-    """Return an array of exhibition numbers"""
-    return list(data.ExhibitionNumber.unique())
+def export_most_combinations():
+    csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv"
+    outfile = "../data/artist_test_combos.txt"
+    Moma = ExhibitionData(csv_path, outfile)
+
+    exh_numbers = Moma.exhibition_numbers()
+    # Remove the wierd placeholder show
+    exh_numbers.remove("No#")
+
+    for en in exh_numbers:
+        terms = Moma.exhibition_artists(en)
+        # Don't calculate and output big lists
+        if len(terms) <= 50:
+            C = Moma.combinations(terms, 5)
+            Moma.append_to_outfile(C)
 
 
-def output(data, exh_id):
-    """Save a file"""
-    # Select the rows with exhibition ID
-    exh = data.loc[data['ExhibitionNumber'] == str(exh_id)]
-    # From that take only the artists, leaving the curators
-    artists = exh.loc[exh['ExhibitionRole'] == 'Artist']
-    artist_names = artists['DisplayName'].tolist()
+def export_no_combinations():
+    csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv"
+    outfile = "../data/artist_no_combos.txt"
+    Moma = ExhibitionData(csv_path, outfile)
 
-    # If the exh has lots of artists, then peace out
-    if len(artist_names) > 50:
-        return None
+    exh_numbers = Moma.exhibition_numbers()
+    # Remove the wierd placeholder show
+    exh_numbers.remove("No#")
 
-    # Get all combinations in sets of 5
-    combos = combinations(artist_names, 5)
-    print(f"artist_names: {artist_names}")
-
-    with open('./artist_combinations_output.txt', 'a') as f:
-        for line in list(combos):
-            f.write(f"{format_line(line)}\n")
-
-    f.close()
+    for en in exh_numbers:
+        terms = Moma.exhibition_artists(en)
+        # Don't calculate and output big lists
+        if len(terms) <= 50:
+            Moma.append_to_outfile(terms)
 
 
-p = Path('~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv')
-d = pd.read_csv(p)
-
-exh_numbers = get_exh_numbers(d)
-# Remove the wierd placeholder show
-exh_numbers.remove('No#')
-
-# Output combinations for the first 10 exhibitions
-for i in exh_numbers:
-    print(f"outputing exh_id {i}")
-    output(d, i)
+export_no_combinations()
