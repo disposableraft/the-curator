@@ -2,16 +2,17 @@
 
 import pandas as pd
 import itertools
+from gensim.parsing.preprocessing import preprocess_string
 
 
 class ExhibitionData:
     def __init__(self, csv_path, outfile):
-        self.data = pd.read_csv(csv_path)
+        self.data = pd.read_csv(csv_path, encoding="ISO-8859-1")
         self.outfile = outfile
 
     def format_name(self, name):
         "Join a name with an underscore"
-        return "_".join(name.split(" ")).lower()
+        return "".join(preprocess_string(name))
 
     def format_line(self, tup):
         "Return a string of n names joined with underscores"
@@ -72,7 +73,7 @@ def export_most_combinations():
 
 
 def export_no_combinations():
-    csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv"
+    csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1931to1989.csv"
     outfile = "../data/artist_no_combos.txt"
     Moma = ExhibitionData(csv_path, outfile)
 
@@ -87,4 +88,4 @@ def export_no_combinations():
             Moma.append_to_outfile(terms)
 
 
-export_no_combinations()
+export_most_combinations()
