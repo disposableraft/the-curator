@@ -41,31 +41,28 @@ class ExhibitionData:
         return itertools.combinations(i, r)
 
     def append_to_outfile(self, i):
-        if len(i) == 0:
-            return None
-
         with open(self.outfile, "a") as f:
-            # There's probably a better way to do this. For tuples we want
-            # a loop, for lists we just want to write it out.
-            if type(i) == tuple:
-                for c in i:
-                    f.write(f"{self.format_line(c)}\n")
-            else:
-                f.write(f"{self.format_line(i)}\n")
+            for c in i:
+                f.write(f"{self.format_line(c)}\n")
         f.close()
 
 
 def export_most_combinations():
+    """
+    Only export combinations of exhibitions with a given number of artists.
+    """
     csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv"
-    outfile = "../data/artist_test_combos.txt"
+    outfile = "../data/artist_combos.txt"
     Moma = ExhibitionData(csv_path, outfile)
 
     exh_numbers = Moma.exhibition_numbers()
+    print(f"exh_numbers: {len(exh_numbers)}")
     # Remove the wierd placeholder show
     exh_numbers.remove("No#")
 
     for en in exh_numbers:
         terms = Moma.exhibition_artists(en)
+        print(f"terms: {len(terms)}")
         # Don't calculate and output big lists
         if len(terms) <= 50:
             C = Moma.combinations(terms, 5)
@@ -73,6 +70,9 @@ def export_most_combinations():
 
 
 def export_no_combinations():
+    """
+    Export only the exhibition names but not combinations.
+    """
     csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1931to1989.csv"
     outfile = "../data/artist_no_combos.txt"
     Moma = ExhibitionData(csv_path, outfile)
@@ -89,3 +89,4 @@ def export_no_combinations():
 
 
 export_most_combinations()
+
