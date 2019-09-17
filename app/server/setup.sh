@@ -1,0 +1,2 @@
+virtualenv ./
+source bin/activate
