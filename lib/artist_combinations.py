@@ -1,4 +1,6 @@
-"""Generate text files for artist permutations"""
+"""
+Generate text files for artist combinations
+"""
 
 import pandas as pd
 import itertools
@@ -18,17 +20,11 @@ class ExhibitionData:
         "Return a string of n names joined with underscores"
         return " ".join([self.format_name(t) for t in tup])
 
-    def exhibition_numbers(self, startstop=None):
+    def exhibition_numbers(self):
         """
         Return a list of exhibition numbers.
-        count: By default return all of them.
         """
-        unique_numbers = list(self.data.ExhibitionNumber.unique())
-        if not startstop:
-            return unique_numbers
-        else:
-            start, stop = startstop
-            return unique_numbers[start:stop]
+        return list(self.data.ExhibitionNumber.unique())
 
     def exhibition_artists(self, exh_number):
         "Return a list of artists given an exhibition number"
