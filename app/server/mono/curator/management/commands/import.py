@@ -56,9 +56,6 @@ def create_exhibition(row):
     return exh, created
 
 def create_artist(row, exhibition):
-    # Pass by when a token is blank
-    if row['token'] == '':
-        return
     artist, created = Artist.objects.get_or_create(
         display_name=row['DisplayName'],
         defaults={
