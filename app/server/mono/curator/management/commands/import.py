@@ -9,18 +9,29 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('csv_path', type=str)
+        parser.add_argument(
+            '--debug',
+            # Treat the presence of this flag as True
+            action='store_true',
+            help="Print each row of the CSV as it's input."
+        )
 
     def handle(self, *args, **options):
-        # Read the CSV file
         path = options['csv_path']
+        exh_count = 0
+        artists_count = 0
         with open(path) as f:
             reader = csv.DictReader(f)
-            # For each row find or create the exhibition.
-            # Then find or create the artist
             for row in reader:
-                exh = create_exhibition(row)
-                artist = create_artist(row, exh)
-                self.stdout.write(f"{row}")
+                exh, exh_created = create_exhibition(row)
+                _, artist_created = create_artist(row, exh)
+                if exh_created:
+                    exh_count += 1
+                if artist_created:
+                    artists_count += 1
+                if options['debug']:
+                    self.stdout.write(f"{row}")
+        self.stdout.write(f"Imported {exh_count} Exhibitions and {artists_count} Artists'")
 
 
 """
@@ -34,7 +45,7 @@ def create_exhibition(row):
     else:
         id = row['ExhibitionID']
     
-    exh, _ = Exhibition.objects.get_or_create(
+    exh, created = Exhibition.objects.get_or_create(
         title=row['ExhibitionTitle'],
         defaults={
             'moma_id': id,
@@ -42,13 +53,13 @@ def create_exhibition(row):
             'moma_url': row['ExhibitionURL'],
         }
     )
-    return exh
+    return exh, created
 
 def create_artist(row, exhibition):
-    # Get or create the artist.
+    # Pass by when a token is blank
     if row['token'] == '':
         return
-    artist, _ = Artist.objects.get_or_create(
+    artist, created = Artist.objects.get_or_create(
         display_name=row['DisplayName'],
         defaults={
             'exhibition': exhibition,
@@ -60,4 +71,4 @@ def create_artist(row, exhibition):
             'token': row['token'],
         },
     )
-    return artist
+    return artist, created
