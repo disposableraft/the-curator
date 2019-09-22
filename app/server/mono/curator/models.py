@@ -27,7 +27,7 @@ class Exhibition(models.Model):
 
 class Artist(models.Model):
     display_name = models.CharField(max_length=200, null=True, unique=True)
-    exhibition = models.ForeignKey(Exhibition, on_delete=models.CASCADE)
+    exhibition = models.ManyToManyField(Exhibition)
     first_name = models.CharField(max_length=200, null=True)
     last_name = models.CharField(max_length=200, null=True)
     middle_name = models.CharField(max_length=200, null=True)

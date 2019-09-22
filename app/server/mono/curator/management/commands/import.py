@@ -24,7 +24,8 @@ class Command(BaseCommand):
             reader = csv.DictReader(f)
             for row in reader:
                 exh, exh_created = create_exhibition(row)
-                _, artist_created = create_artist(row, exh)
+                artist, artist_created = create_artist(row)
+                exh.artist_set.add(artist)
                 if exh_created:
                     exh_count += 1
                 if artist_created:
@@ -44,7 +45,7 @@ def create_exhibition(row):
         id = 0
     else:
         id = row['ExhibitionID']
-    
+
     exh, created = Exhibition.objects.get_or_create(
         title=row['ExhibitionTitle'],
         defaults={
@@ -55,11 +56,10 @@ def create_exhibition(row):
     )
     return exh, created
 
-def create_artist(row, exhibition):
+def create_artist(row):
     artist, created = Artist.objects.get_or_create(
         display_name=row['DisplayName'],
         defaults={
-            'exhibition': exhibition,
             'first_name': row['FirstName'],
             'last_name': row['LastName'],
             'middle_name': row['MiddleName'],
