@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 from django.urls import reverse
 
-from .models import Artist, Exhibition
+from curator.models import Artist, Exhibition
 
 def create_exhibition(title):
     return Exhibition.objects.create(title=title)
