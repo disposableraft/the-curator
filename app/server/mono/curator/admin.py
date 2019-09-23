@@ -2,11 +2,15 @@ from django.contrib import admin
 
 from .models import Artist, Exhibition
 
-
-class ArtistInline(admin.TabularInline):
-    fields = ('display_name', 'token', 'moma_url')
-    model = Artist
+class MembershipInline(admin.TabularInline):
+    model = Artist.exhibition.through
     extra = 0
+    can_delete = False
+
+
+class ArtistAdmin(admin.ModelAdmin):
+    inlines = [MembershipInline]
+    exclude = ('exhibition',)
 
 
 class ExhibitionAdmin(admin.ModelAdmin):
@@ -21,8 +25,10 @@ class ExhibitionAdmin(admin.ModelAdmin):
     list_display = [
         'title', 'artist_count', 'moma_url',
     ]
-    inlines = [ArtistInline]
+    inlines = [MembershipInline]
+
     def artist_count(self, obj):
-        return len(obj.artist_set.all())
+        return obj.artist_set.count()
 
 admin.site.register(Exhibition, ExhibitionAdmin)
+admin.site.register(Artist, ArtistAdmin)
