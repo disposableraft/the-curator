@@ -5,8 +5,11 @@ from django.urls import reverse
 
 from curator.models import Artist, Exhibition
 
-def create_exhibition(title):
-    return Exhibition.objects.create(title=title)
+def create_exhibition(title, url=None):
+    return Exhibition.objects.create(
+        title=title,
+        moma_url=url,
+    )
 
 class ExhibitionDetailViewTests(TestCase):
     def test_exhibition_json(self):
@@ -24,7 +27,7 @@ class ExhibitionDetailViewTests(TestCase):
         exh = create_exhibition("13 Foos")
         res = self.client.get(reverse('curator:exhibition', args=[exh.pk]))
         self.assertContains(res, exh.title)
-    
+
     def test_exhibition_without_pk(self):
         """
         An exhibition without a valid ID fails.
@@ -32,23 +35,32 @@ class ExhibitionDetailViewTests(TestCase):
         res = self.client.get(reverse('curator:exhibition', args=[int(9e20)]))
         raw = json.loads(res.content)['errors']
         self.assertEqual(raw, "Resource does not exist.")
-    
+
     def test_exhibition_artists(self):
         """
         There's a list of exhibition artists.
         """
         exh = create_exhibition("13 Primes")
         exh.artist_set.create(
-            first_name="Helen",
-            last_name="Frankenthaler",
-            token="helenfranknthal",
+            display_name="Helen Frankenthaler",
+            token="bar"
         )
         exh.artist_set.create(
-            first_name="Elaine",
-            last_name="de Kooning",
-            token="elaindkooning",
+            display_name="Elaine de Kooning",
+            token="foo"
         )
         res = self.client.get(reverse('curator:exhibition', args=[exh.pk]))
-        self.assertContains(res, "Frankenthaler")
-        self.assertContains(res, "de Kooning")
+        self.assertContains(res, "Helen Frankenthaler")
+        self.assertContains(res, "Elaine de Kooning")
+
+    def test_exhibition_displays_title_and_moma_url(self):
+        """
+        The JSON output includes the title and a link to the resource.
+        """
+        title = '13 Primes'
+        url = 'example.com/13-primes'
+        exh = create_exhibition(title, url)
+        res = self.client.get(reverse('curator:exhibition', args=[exh.pk]))
+        self.assertContains(res, title)
+        self.assertContains(res, url)
 
