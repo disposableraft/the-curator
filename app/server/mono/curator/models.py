@@ -5,7 +5,7 @@ csv_cols = [
     'ExhibitionID',
     'ExhibitionNumber',
     'ExhibitionTitle',
-    'ConstituentURL', 
+    'ConstituentURL',
     'FirstName',
     'MiddleName',
     'LastName',
@@ -21,6 +21,9 @@ class Exhibition(models.Model):
     moma_number = models.CharField(max_length=50)
     moma_url = models.URLField(null=True)
     title = models.CharField(max_length=200, unique=True)
+
+    class Meta:
+        ordering = ('title',)
 
     def __str__(self):
         return self.title
@@ -38,5 +41,8 @@ class Artist(models.Model):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
+    class Meta:
+        ordering = ('display_name',)
+
     def __str__(self):
-        return self.full_name()
+        return self.display_name
