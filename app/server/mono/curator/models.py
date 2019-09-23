@@ -38,9 +38,6 @@ class Artist(models.Model):
     suffix = models.CharField(max_length=25, null=True)
     token = models.CharField(max_length=200)
 
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
-
     class Meta:
         ordering = ('display_name',)
 
