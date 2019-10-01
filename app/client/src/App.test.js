@@ -7,6 +7,7 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
 
 jest.mock('axios')
+jest.mock('vis')
 
 const res = {
   data: {
