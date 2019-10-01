@@ -10,13 +10,10 @@ def exhibition(request, pk):
         'title': None,
         'url': None,
     }
-    try:
-        exh = Exhibition.objects.get(pk=pk)
-        content['artists'] = serialize_artists(exh.artist_set.all())
-        content['title'] = exh.title
-        content['url'] = exh.moma_url
-    except Exhibition.DoesNotExist:
-        content['errors'] = "Resource does not exist."
+    exh = Exhibition.objects.get(pk=pk)
+    content['artists'] = serialize_artists(exh.artist_set.all())
+    content['title'] = exh.title
+    content['url'] = exh.moma_url
     return JsonResponse(content)
 
 def serialize_artists(artists):
