@@ -1,5 +1,5 @@
 import React from 'react';
-import App from './App';
+import Exhibition from './Exhibition';
 import axios from 'axios';
 import { configure, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
@@ -18,28 +18,28 @@ const res = {
   }
 }
 
-describe('<App />', () => {
+describe('<Exhibition />', () => {
   beforeEach(() => {
     axios.get.mockResolvedValue(res)
   });
 
   it('renders a header element', () => {
-    const wrapper = shallow(<App />)
-    expect(wrapper.find('.App-header').length).toEqual(1)
+    const wrapper = shallow(<Exhibition />)
+    expect(wrapper.find('.Exhibition-header').length).toEqual(1)
   });
 
   it('sets the state using getData()', async () => {
-    const wrapper = await shallow(<App />)
+    const wrapper = await shallow(<Exhibition />)
     expect(wrapper.state().exhibition.title).toEqual('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 
   it('displays a title', async () => {
-    const wrapper = await shallow(<App />)
-    expect(wrapper.find('.App-header').text()).toContain('Cézanne, Gauguin, Seurat, Van Gogh')
+    const wrapper = await shallow(<Exhibition />)
+    expect(wrapper.find('.Exhibition-header').text()).toContain('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 
   it('renders a list of artists', async () => {
-    const wrapper = await shallow(<App />);
+    const wrapper = await shallow(<Exhibition />);
     expect(wrapper.find('ul').children().length).toEqual(4)
   });
 });
