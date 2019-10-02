@@ -76,23 +76,12 @@ class Exhibition extends React.Component {
   }
 
   render() {
-    const { title, artists } = this.state.exhibition;
+    const { title } = this.state.exhibition;
 
     return (
       <div className="Exhibition">
         <div className="Exhibition-header">{title}</div>
         <div className="Exhibition-graph" ref={this.myRef} />
-        <div className="Exhibition-artists">
-          <ul>
-            {artists.map(a => {
-              return (
-                <li key={a.token} className="artist">
-                  {a.display_name}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
       </div>
     );
   };
