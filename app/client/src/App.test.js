@@ -19,26 +19,26 @@ const res = {
 }
 
 describe('<App />', () => {
-  it('renders a header element', () => {
+  beforeEach(() => {
     axios.get.mockResolvedValue(res)
+  });
+
+  it('renders a header element', () => {
     const wrapper = shallow(<App />)
     expect(wrapper.find('.App-header').length).toEqual(1)
   });
 
   it('sets the state using getData()', async () => {
-    axios.get.mockResolvedValue(res)
     const wrapper = await shallow(<App />)
     expect(wrapper.state().exhibition.title).toEqual('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 
   it('displays a title', async () => {
-    axios.get.mockResolvedValue(res)
     const wrapper = await shallow(<App />)
     expect(wrapper.find('.App-header').text()).toContain('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 
   it('renders a list of artists', async () => {
-    axios.get.mockResolvedValue(res)
     const wrapper = await shallow(<App />);
     expect(wrapper.find('ul').children().length).toEqual(4)
   });
