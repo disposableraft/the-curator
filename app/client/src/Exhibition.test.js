@@ -20,6 +20,7 @@ const res = {
 
 describe('<Exhibition />', () => {
   beforeEach(() => {
+    // TODO: Test Exhibition.getData()
     axios.get.mockResolvedValue(res)
   });
 

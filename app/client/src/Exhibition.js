@@ -16,16 +16,16 @@ class Exhibition extends React.Component {
   }
 
   componentDidMount() {
-    this.getData().then(success => {
+    this.getData(this.props.id).then(success => {
       if (success) {
         this.drawGraph();
       }
     }).catch(error => console.error(error));
   }
 
-  getData() {
+  getData(id) {
     return new Promise((resolve, reject) => {
-      const req = axios.get('http://127.0.0.1:8000/curator/exhibition/23/');
+      const req = axios.get(`http://127.0.0.1:8000/curator/exhibition/${id}`);
 
       req.then((res) => {
         this.setState(state => {
