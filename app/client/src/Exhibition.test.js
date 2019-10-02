@@ -38,9 +38,4 @@ describe('<Exhibition />', () => {
     const wrapper = await shallow(<Exhibition />)
     expect(wrapper.find('.Exhibition-header').text()).toContain('Cézanne, Gauguin, Seurat, Van Gogh')
   });
-
-  it('renders a list of artists', async () => {
-    const wrapper = await shallow(<Exhibition />);
-    expect(wrapper.find('ul').children().length).toEqual(4)
-  });
 });
