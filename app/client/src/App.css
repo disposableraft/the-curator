@@ -1,9 +1,9 @@
-.App {
+.Exhibition {
   text-align: center;
   height: 100%;
 }
 
-.App-header {
+.Exhibition-header {
   background-color: #282c34;
   min-height: 10vh;
   display: flex;
@@ -14,11 +14,11 @@
   color: white;
 }
 
-.App-link {
+.Exhibition-link {
   color: #09d3ac;
 }
 
-.App-graph {
+.Exhibition-graph {
   width: 600px;
   height: 400px;
   border: 1px solid lightgray;
