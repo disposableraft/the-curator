@@ -16,7 +16,8 @@ class Exhibition extends React.Component {
   }
 
   componentDidMount() {
-    this.getData(this.props.id).then(success => {
+    const id = this.props.match.params.id;
+    this.getData(id).then(success => {
       if (success) {
         this.drawGraph();
       }
