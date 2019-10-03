@@ -64,7 +64,8 @@ class Exhibition extends React.Component {
     nodes.push(
       {
         id: 'exhibitionTitle',
-        label: title
+        label: title,
+        shape: 'circle',
       }
     );
 
@@ -72,7 +73,13 @@ class Exhibition extends React.Component {
       nodes: new vis.DataSet(nodes),
       edges: new vis.DataSet(edges)
     };
-    const options = {};
+
+    const options = {
+      nodes: {
+        shape: 'text',
+      }
+    };
+
     return new vis.Network(this.myRef.current, data, options);
   }
 
