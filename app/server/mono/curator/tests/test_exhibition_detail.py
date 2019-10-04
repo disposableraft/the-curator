@@ -28,14 +28,6 @@ class ExhibitionDetailViewTests(TestCase):
         res = self.client.get(reverse('curator:exhibition', args=[exh.pk]))
         self.assertContains(res, exh.title)
 
-    def test_exhibition_without_pk(self):
-        """
-        An exhibition without a valid ID fails.
-        """
-        res = self.client.get(reverse('curator:exhibition', args=[int(9e20)]))
-        raw = json.loads(res.content)['errors']
-        self.assertEqual(raw, "Resource does not exist.")
-
     def test_exhibition_artists(self):
         """
         There's a list of exhibition artists.
