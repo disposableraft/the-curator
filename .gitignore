@@ -2,3 +2,4 @@
 *.swp
 data/
 notebooks/plots/
+app/server/mono/curator/.vscode
