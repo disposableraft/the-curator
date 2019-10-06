@@ -9,6 +9,8 @@ configure({ adapter: new Adapter() });
 jest.mock('axios')
 jest.mock('vis')
 
+const route = { params: { id: 23 }}
+
 const res = {
   data: {
     artists: [{"display_name": "Georges-Pierre Seurat", "token": "georgpierrseurat", "moma_url": "moma.org/artists/5358"}, {"display_name": "Paul C\u00e9zanne", "token": "paulc\u00e9zann", "moma_url": "moma.org/artists/1053"}, {"display_name": "Paul Gauguin", "token": "paulgauguin", "moma_url": "moma.org/artists/2098"}, {"display_name": "Vincent van Gogh", "token": "vincentvangogh", "moma_url": "moma.org/artists/2206"}],
@@ -20,22 +22,21 @@ const res = {
 
 describe('<Exhibition />', () => {
   beforeEach(() => {
-    // TODO: Test Exhibition.getData()
     axios.get.mockResolvedValue(res)
   });
 
   it('renders a header element', () => {
-    const wrapper = shallow(<Exhibition />)
+    const wrapper = shallow(<Exhibition match={route} />)
     expect(wrapper.find('.Exhibition-header').length).toEqual(1)
   });
 
   it('sets the state using getData()', async () => {
-    const wrapper = await shallow(<Exhibition />)
+    const wrapper = await shallow(<Exhibition match={route} />)
     expect(wrapper.state().exhibition.title).toEqual('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 
   it('displays a title', async () => {
-    const wrapper = await shallow(<Exhibition />)
+    const wrapper = await shallow(<Exhibition match={route} />)
     expect(wrapper.find('.Exhibition-header').text()).toContain('Cézanne, Gauguin, Seurat, Van Gogh')
   });
 });

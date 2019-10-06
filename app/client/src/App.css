@@ -7,7 +7,8 @@
   font-size: calc(10px + 2vmin);
 }
 
-.Exhibition-header {
+.Exhibition-header,
+.Similar-header {
   background-color: #282c34;
   min-height: 10vh;
   color: white;
@@ -17,11 +18,13 @@
   justify-content: center;
 }
 
-.Exhibition-link {
+.Exhibition-link,
+.Similar-link {
   color: #09d3ac;
 }
 
-.Exhibition-graph {
+.Exhibition-graph,
+.Similar-graph {
   background-color: whitesmoke;
   width: 700px;
   height: 700px;
