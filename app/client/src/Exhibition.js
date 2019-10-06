@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import vis from 'vis';
+import Graph from './Graph.js';
 import './App.css';
 
 class Exhibition extends React.Component {
@@ -12,39 +12,11 @@ class Exhibition extends React.Component {
         title: '',
         artists: [],
       },
+      graph: [],
     };
   }
 
-  componentDidMount() {
-    const id = this.props.match.params.id;
-    this.getData(id).then(success => {
-      if (success) {
-        this.drawGraph();
-      }
-    }).catch(error => console.error(error));
-  }
-
-  getData(id) {
-    return new Promise((resolve, reject) => {
-      const req = axios.get(`http://127.0.0.1:8000/curator/exhibition/${id}`);
-
-      req.then((res) => {
-        this.setState(state => {
-          return {
-            exhibition: res.data,
-          };
-        });
-        resolve(true);
-      });
-
-      req.catch((error) => {
-        console.error(error);
-        reject(error);
-      });
-    });
-  }
-
-  drawGraph() {
+  setupGraph() {
     const { artists, title } = this.state.exhibition;
     const nodes = artists.map(a => {
       return {
@@ -69,27 +41,66 @@ class Exhibition extends React.Component {
       }
     );
 
-    const data = {
-      nodes: new vis.DataSet(nodes),
-      edges: new vis.DataSet(edges)
-    };
-
     const options = {
       nodes: {
         shape: 'text',
       }
-    };
+    }
 
-    return new vis.Network(this.myRef.current, data, options);
+    return {
+      nodes: nodes,
+      edges: edges,
+      options: options,
+    }
+  }
+
+  componentDidMount() {
+    const id = this.props.match.params.id;
+
+    this.getData(id).then(success => {
+      if (success) {
+        this.setState((state) => {
+          state.graph = this.setupGraph();
+          return state;
+        });
+      }
+    }).catch(error => console.error(error));
+  }
+
+  getData(id) {
+    return new Promise((resolve, reject) => {
+      const req = axios.get(`http://127.0.0.1:8000/curator/exhibition/${id}`);
+
+      req.then((res) => {
+        this.setState(state => {
+          return {
+            exhibition: res.data,
+          };
+        });
+        resolve(true);
+      });
+
+      req.catch((error) => {
+        console.error(error);
+        reject(error);
+      });
+    });
   }
 
   render() {
     const { title } = this.state.exhibition;
+    const { nodes, edges, options } = this.state.graph;
 
     return (
       <div className="Exhibition">
-        <div className="Exhibition-header">{title}</div>
-        <div className="Exhibition-graph" ref={this.myRef} />
+        <div className="Exhibition-header">
+          {title}
+        </div>
+        <Graph
+          nodes={nodes}
+          edges={edges}
+          options={options}
+        />
       </div>
     );
   };
