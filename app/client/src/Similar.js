@@ -1,17 +1,17 @@
 import React from 'react';
 import axios from 'axios';
-import vis from 'vis';
+import Graph from './Graph.js';
 import './App.css';
 
 class Similar extends React.Component {
   constructor(props) {
     super(props);
-    this.myRef = React.createRef();
     this.state = {
       similar: {
         original_token: '',
         artists: [],
       },
+      graph: [],
     };
   }
 
@@ -19,7 +19,10 @@ class Similar extends React.Component {
     const token = this.props.match.params.token;
     this.getData(token).then(success => {
       if (success) {
-        this.drawGraph();
+        this.setState(state => {
+          state.graph = this.setupGraph();
+          return state;
+        });
       }
     }).catch(error => console.error(error));
   }
@@ -44,7 +47,7 @@ class Similar extends React.Component {
     });
   }
 
-  drawGraph() {
+  setupGraph() {
     const { artists, original_token } = this.state.similar;
     const nodes = artists.map(a => {
       return {
@@ -69,27 +72,27 @@ class Similar extends React.Component {
       }
     );
 
-    const data = {
-      nodes: new vis.DataSet(nodes),
-      edges: new vis.DataSet(edges)
-    };
-
     const options = {
       nodes: {
         shape: 'text',
       }
     };
 
-    return new vis.Network(this.myRef.current, data, options);
+    return { nodes, edges, options };
   }
 
   render() {
     const { original_token } = this.state.similar;
+    const { nodes, edges, options } = this.state.graph;
 
     return (
       <div className="Similar">
         <div className="Similar-header">{original_token}</div>
-        <div className="Similar-graph" ref={this.myRef} />
+        <Graph
+          nodes={nodes}
+          edges={edges}
+          options={options}
+        />
       </div>
     );
   };
