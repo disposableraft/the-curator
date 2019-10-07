@@ -20,8 +20,7 @@ class SimilarTest(TestCase):
         """
         token = "marcelduchamp"
         similar = Similar()
-        similarities = similar.get_ten(token)
-        output = [t for t, _ in similarities]
+        output = similar.get_ten(token)
         expected = [
             "eliotelisofon",
             "étiennjulemarei",

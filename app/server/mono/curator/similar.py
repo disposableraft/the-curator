@@ -7,4 +7,4 @@ class Similar():
         model_path = os.path.join(settings.BASE_DIR, '../../../data/models/moma-combos.model')
         model = gensim.models.Word2Vec.load(model_path)
         similar = model.wv.most_similar(token, topn=10)
-        return similar
+        return [token for token, _score in similar]
