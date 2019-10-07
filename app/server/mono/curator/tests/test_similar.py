@@ -231,7 +231,7 @@ class SimilarViewTests(TestCase):
         """
         res = self.client.get(reverse("curator:similar", args=["helenfrankenthal"]))
         content = json.loads(res.content)
-        self.assertEquals(10, len(content["artists"]))
+        self.assertEquals(10, len(content["similar"]))
 
     def test_responds_with_original_token(self):
         """
@@ -239,7 +239,7 @@ class SimilarViewTests(TestCase):
         """
         res = self.client.get(reverse("curator:similar", args=["helenfrankenthal"]))
         content = json.loads(res.content)
-        self.assertEqual("helenfrankenthal", content["original_token"])
+        self.assertEqual("helenfrankenthal", content["token"])
 
     def test_responds_with_full_artist_data(self):
         """

@@ -17,7 +17,7 @@ def exhibition(request, pk):
 def similar(request, token):
     tokens = Similar().get_ten(token)
     artists = _get_artists_from_tokens(tokens)
-    content = {"original_token": token, "artists": _serialize_artists(artists)}
+    content = {"token": token, "similar": _serialize_artists(artists)}
     return JsonResponse(content)
 
 
