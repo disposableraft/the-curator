@@ -35,6 +35,169 @@ class SimilarTest(TestCase):
         ]
         self.assertEqual(expected, output)
 
+    def test_get_neighbors(self):
+        """
+        Should return ten similar artists, and each artist should include another ten similar artists.
+        """
+        expected = {
+            "token": "evahess",
+            "similar": [
+                {
+                    "token": "josephbeui",
+                    "similar": [
+                        {"token": "bryanhunt"},
+                        {"token": "evahess"},
+                        {"token": "blinkipalermo"},
+                        {"token": "johnchamberlain"},
+                        {"token": "terriwinter"},
+                        {"token": "christochristojavacheff"},
+                        {"token": "alansaret"},
+                        {"token": "brucenauman"},
+                        {"token": "robertsmithson"},
+                        {"token": "öyvindfahlström"},
+                    ],
+                },
+                {
+                    "token": "robertsmithson",
+                    "similar": [
+                        {"token": "frankstella"},
+                        {"token": "twombl"},
+                        {"token": "andiwarhol"},
+                        {"token": "carlandr"},
+                        {"token": "richardartschwag"},
+                        {"token": "robertryman"},
+                        {"token": "evahess"},
+                        {"token": "johnchamberlain"},
+                        {"token": "bryanhunt"},
+                        {"token": "christochristojavacheff"},
+                    ],
+                },
+                {
+                    "token": "johnchamberlain",
+                    "similar": [
+                        {"token": "bryanhunt"},
+                        {"token": "richardartschwag"},
+                        {"token": "alansaret"},
+                        {"token": "susanrothenberg"},
+                        {"token": "andiwarhol"},
+                        {"token": "twombl"},
+                        {"token": "melbochner"},
+                        {"token": "gariindiana"},
+                        {"token": "alanshield"},
+                        {"token": "frankstella"},
+                    ],
+                },
+                {
+                    "token": "hanndarboven",
+                    "similar": [
+                        {"token": "jameleebyar"},
+                        {"token": "michaelheizer"},
+                        {"token": "georgsegal"},
+                        {"token": "melbochner"},
+                        {"token": "johncage"},
+                        {"token": "panamarenko"},
+                        {"token": "evahess"},
+                        {"token": "öyvindfahlström"},
+                        {"token": "lawrencweiner"},
+                        {"token": "marktansei"},
+                    ],
+                },
+                {
+                    "token": "marktansei",
+                    "similar": [
+                        {"token": "terriwinter"},
+                        {"token": "lyndabengli"},
+                        {"token": "baer"},
+                        {"token": "bricemarden"},
+                        {"token": "jonathanborofski"},
+                        {"token": "alanshield"},
+                        {"token": "evahess"},
+                        {"token": "hanndarboven"},
+                        {"token": "danflavin"},
+                        {"token": "danielburen"},
+                    ],
+                },
+                {
+                    "token": "bryanhunt",
+                    "similar": [
+                        {"token": "johnchamberlain"},
+                        {"token": "melbochner"},
+                        {"token": "richardartschwag"},
+                        {"token": "alansaret"},
+                        {"token": "patsteir"},
+                        {"token": "josephbeui"},
+                        {"token": "alfrjensen"},
+                        {"token": "ericfischl"},
+                        {"token": "robertsmithson"},
+                        {"token": "christochristojavacheff"},
+                    ],
+                },
+                {
+                    "token": "chuckclose",
+                    "similar": [
+                        {"token": "bryanhunt"},
+                        {"token": "marcelbroodthaer"},
+                        {"token": "michelangelopistoletto"},
+                        {"token": "evahess"},
+                        {"token": "carlandr"},
+                        {"token": "melbochner"},
+                        {"token": "rossbleckner"},
+                        {"token": "johncage"},
+                        {"token": "richardartschwag"},
+                        {"token": "carlfredrikreuterswärd"},
+                    ],
+                },
+                {
+                    "token": "öyvindfahlström",
+                    "similar": [
+                        {"token": "michaelheizer"},
+                        {"token": "fredsandback"},
+                        {"token": "melbochner"},
+                        {"token": "bryanhunt"},
+                        {"token": "hanndarboven"},
+                        {"token": "evahess"},
+                        {"token": "johncage"},
+                        {"token": "pieromanzoni"},
+                        {"token": "georgsegal"},
+                        {"token": "josephbeui"},
+                    ],
+                },
+                {
+                    "token": "alansaret",
+                    "similar": [
+                        {"token": "johnchamberlain"},
+                        {"token": "bryanhunt"},
+                        {"token": "richardartschwag"},
+                        {"token": "robertsmithson"},
+                        {"token": "dorothearockburn"},
+                        {"token": "rossbleckner"},
+                        {"token": "evahess"},
+                        {"token": "josephbeui"},
+                        {"token": "richardserra"},
+                        {"token": "carlandr"},
+                    ],
+                },
+                {
+                    "token": "carlandr",
+                    "similar": [
+                        {"token": "frankstella"},
+                        {"token": "robertsmithson"},
+                        {"token": "robertrauschenberg"},
+                        {"token": "andiwarhol"},
+                        {"token": "robertmorri"},
+                        {"token": "helenfrankenthal"},
+                        {"token": "jamerosenquist"},
+                        {"token": "richardserra"},
+                        {"token": "alexkatz"},
+                        {"token": "claeoldenburg"},
+                    ],
+                },
+            ],
+        }
+        output = Similar().get_neighbors("evahess")
+
+        self.assertEqual(expected, output)
+
 
 class SimilarViewTests(TestCase):
     @classmethod
