@@ -8,7 +8,7 @@ class Exhibition extends React.Component {
     super(props);
     this.myRef = React.createRef();
     this.state = {
-      exhibition: {
+      data: {
         title: '',
         artists: [],
       },
@@ -17,7 +17,7 @@ class Exhibition extends React.Component {
   }
 
   setupGraph() {
-    const { artists, title } = this.state.exhibition;
+    const { artists, title } = this.state.data;
     const nodes = artists.map(a => {
       return {
         id: a.token,
@@ -74,7 +74,7 @@ class Exhibition extends React.Component {
       req.then((res) => {
         this.setState(state => {
           return {
-            exhibition: res.data,
+            data: res.data,
           };
         });
         resolve(true);
@@ -88,7 +88,7 @@ class Exhibition extends React.Component {
   }
 
   render() {
-    const { title } = this.state.exhibition;
+    const { title } = this.state.data;
     const { nodes, edges, options } = this.state.graph;
 
     return (

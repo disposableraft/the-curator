@@ -7,9 +7,9 @@ class Similar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      similar: {
-        original_token: '',
-        artists: [],
+      data: {
+        token: '',
+        similar: [],
       },
       graph: [],
     };
@@ -34,7 +34,7 @@ class Similar extends React.Component {
       req.then((res) => {
         this.setState(state => {
           return {
-            similar: res.data,
+            data: res.data,
           };
         });
         resolve(true);
@@ -48,8 +48,8 @@ class Similar extends React.Component {
   }
 
   setupGraph() {
-    const { artists, original_token } = this.state.similar;
-    const nodes = artists.map(a => {
+    const { similar, token } = this.state.data;
+    const nodes = similar.map(a => {
       return {
         id: a.token,
         label: a.display_name
@@ -67,7 +67,7 @@ class Similar extends React.Component {
     nodes.push(
       {
         id: 'originalToken',
-        label: original_token,
+        label: token,
         shape: 'circle',
       }
     );
@@ -82,12 +82,12 @@ class Similar extends React.Component {
   }
 
   render() {
-    const { original_token } = this.state.similar;
+    const { token } = this.state.data;
     const { nodes, edges, options } = this.state.graph;
 
     return (
       <div className="Similar">
-        <div className="Similar-header">{original_token}</div>
+        <div className="Similar-header">{token}</div>
         <Graph
           nodes={nodes}
           edges={edges}
