@@ -1,4 +1,0 @@
-pip install Django==2.2.5
-pip install psycopg2
-pip install django-cors-headers
-pip install gensim
