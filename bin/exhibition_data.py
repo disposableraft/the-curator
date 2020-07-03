@@ -5,7 +5,7 @@ Generate text files for artist combinations
 import pandas as pd
 import itertools
 from gensim.parsing.preprocessing import preprocess_string
-
+from datetime import date
 
 class ExhibitionData:
     def __init__(self, csv_path, outfile):
@@ -48,26 +48,35 @@ def export_most_combinations():
     Only export combinations of exhibitions with a given number of artists.
     """
     csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1929to1989.csv"
-    outfile = "../data/artist_combos.txt"
+    today = date.today()
+    outfile = f"data/{today.year}-{today.month}-{today.day}-artist_combos.txt"
     Moma = ExhibitionData(csv_path, outfile)
 
+    # Opportunity for higher visibility. Show exhibitions where `x < exh < y`.
     exh_numbers = Moma.exhibition_numbers()
     print(f"exh_numbers: {len(exh_numbers)}")
-    # Remove the wierd placeholder show
+
+    # Removing shows, could be done with above filtering inside a `class Exhibition`
+    # Remove the placeholder show
     exh_numbers.remove("No#")
 
+    exhibition_count = 0
+
     for en in exh_numbers:
+        if exhibition_count == 10:
+            break
         terms = Moma.exhibition_artists(en)
         print(f"terms: {len(terms)}")
         # Don't calculate and output big lists
-        if len(terms) <= 50:
+        if len(terms) <= 50 and len(terms) > 1:
             C = Moma.combinations(terms, 5)
             Moma.append_to_outfile(C)
+            exhibition_count += 1
 
-
+# This duplication appears to be used to get visibility on exhibitions without combinations.
 def export_no_combinations():
     """
-    Export only the exhibition names but not combinations.
+    Export only the names but not combinations.
     """
     csv_path = "~/data1/moma/exhibitions/MoMAExhibitions1931to1989.csv"
     outfile = "../data/artist_no_combos.txt"
