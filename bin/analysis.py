@@ -1,6 +1,6 @@
-from gensim.parsing.preprocessing import preprocess_string
 from pathlib import Path
 from gensim.models import Word2Vec
+from artist import Artist
 
 """
 Abstract Expressionism
@@ -31,21 +31,6 @@ class Word2VecModel:
 
     def topn(self, token, topn=10):
         return self.model.wv.most_similar(token, topn=topn)
-
-
-class Artist(object):
-    def __init__(self, name):
-        self.name = name
-        self.token = self.tokenize()
-        self.similar = dict()
-    
-    def tokenize(self):
-        token = "".join(preprocess_string(self.name))
-        return token
-    
-    def add_similar(self, token, rank):
-        self.similar['token'] = SimilarArtist(token, rank)
-
 
 class SimilarArtist(Artist):
     def __init__(self, token, rank=None):
@@ -113,6 +98,8 @@ class Category(object):
             rank = 0
             similar_tokens = model.topn(A_i, topn)
             for s_token, _matrix in similar_tokens:
+                # This check for membership  won't be necessary when the 
+                # classifications flow from the model artists.
                 if self.is_member(s_token):
                     self.artists[A_i].add_similar(s_token, rank)
                 rank += 1

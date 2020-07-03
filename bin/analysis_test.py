@@ -1,11 +1,5 @@
-import category as analysis
+import analysis
 import unittest
-
-class TestArtist(unittest.TestCase):
-    def test_artist(self):
-        x = analysis.Artist('Elaine De Kooning')
-        self.assertEqual(x.name, 'Elaine De Kooning')
-        self.assertEqual(x.token, 'elainkoon')
 
 class TestCategory(unittest.TestCase):
     def test_category(self):
