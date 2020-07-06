@@ -32,13 +32,6 @@ class Word2VecModel:
     def topn(self, token, topn=10):
         return self.model.wv.most_similar(token, topn=topn)
 
-class SimilarArtist(Artist):
-    def __init__(self, token, rank=None):
-        # Similar artists coming from the model don't have names, only tokens
-        self.name = None
-        self.token = token
-        self.rank = rank
-
 
 class Category(object):
     def __init__(self, name, artists=[]):

@@ -13,6 +13,21 @@
 - For categories, only use union of C and M, such that all C are a subset of M.
 - Write scraper (?) or just a SPARQL query (?) for wikimedia IDs to get categories.
 
+Oh, wow. This query took forever! Show the movements for Q235281, aka Helen Frankenthaler.
+
+```sparkl
+SELECT ?movement ?movementLabel WHERE {
+   wd:Q235281 wdt:P135 ?movement.
+   SERVICE wikibase:label {
+     bd:serviceParam wikibase:language "en" .
+   }
+}
+
+# or 
+
+SELECT ?movement ?movementLabel WHERE { wd:Q235281 wdt:P135 ?movement. SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . } }
+```
+
 ### Data Transformation
 
 - Transform diacritics
