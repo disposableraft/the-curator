@@ -11,7 +11,6 @@
 
 - Some categories might be derived from the exhibition titles themselves
 - For categories, only use union of C and M, such that all C are a subset of M.
-- Write scraper (?) or just a SPARQL query (?) for wikimedia IDs to get categories.
 
 Oh, wow. This query took forever! Show the movements for Q235281, aka Helen Frankenthaler.
 
@@ -22,10 +21,6 @@ SELECT ?movement ?movementLabel WHERE {
      bd:serviceParam wikibase:language "en" .
    }
 }
-
-# or 
-
-SELECT ?movement ?movementLabel WHERE { wd:Q235281 wdt:P135 ?movement. SERVICE wikibase:label { bd:serviceParam wikibase:language "en" . } }
 ```
 
 ### Data Transformation
@@ -49,6 +44,14 @@ $A_{CM}$ = *All artists in both category and model*
 
 *Similar*: Artist similarity is a function of the model. The cosine similarity between two vectors is the distance to which they are similar or dissimilar. 
 
+## On an Assumption Concerning CBOW and Skip-Gram
+
+In the first blog post on the curator, I said that the context window would split a 10-word sequence into two groups. But this presents a problem. What about sentences that are not equally divided by ten? 
+
+What I think really might be going on, is the context window slides one word forward each iteration. $I_1 = {0,1,2,3,4}$ then $I_2 = {1,2,3,4,5}$.
+
+Update: This assumption is correct. I pulled the cbow function from the [python implementation](./notebooks/word2vec-cbow.ipynb) to inspect the iteration across sentences. My original intuition that the last artist in a show would not be associated with the first artist was correct. *But* this approach of running all combinations might be overkill. For instance, combinations of 5 might be overkill, while 5+n would be ideal.
+
 ## More Descriptive Edges 
 
 One way the graph of similar artists could be more descriptive would be to add weights to the edges. Currently many edges are undirected: arrows point in both directions. But a weight could be derived from the distance in the cosine similarity between two artists. For instance, two artists: 
@@ -62,6 +65,8 @@ B['similar'] = {A (0.9), p (0.5), q (0.4)}
 `A -> B` would have a lighter edge and `B -> A` would have a heavier edge because the rank of their order.
 
 **Calculating the Edge Weight**
+
+**UPDATE:** The below equation for measuring rank is based on a scale of one to ten, which is basically an ordinal scale, because the distances between intervals is inconsistent. The top result of one node could have a cosim of 0.0003, while the top result of another node could have a cosim of 0.9. Therefore, it would be more accurate and descriptive to use a ratio scale based on cosim. (See journal pages 44, 46-7)
 
 $$ weight = \frac{N - i}{N} $$
 
