@@ -7,7 +7,7 @@ data = utils.load_graph(graph_pickle)
 
 def artist_incoming_edges(artists, exhibitions):
     """
-    Returns an object { 'tokenizedname': int } where int is a count of 
+    Returns an object { 'tokenizedname': int } where int is a count of
     how many times token appear in exhibition nodes.
     """
     incoming = dict()
@@ -18,11 +18,13 @@ def artist_incoming_edges(artists, exhibitions):
                 incoming[token] += 1
     return incoming
 
-degrees = [n.degrees for n in data if n.type == 'Exhibition']
+nodes_of_type = data.get_nodes()
+
+degrees = [n.degrees for n in nodes_of_type['Exhibition'].values()]
 X = sorted(degrees)
 
-artists = [(key, value) for key, value in data.nodes.items()  if value.type == 'Artist']
-exhibitions = [n for n in data if n.type == 'Exhibition']
+artists = [(key, value) for key, value in nodes_of_type['Artist'].items()]
+exhibitions = [n for n in nodes_of_type['Exhibition'].values()]
 
 artist_incoming = artist_incoming_edges(artists, exhibitions)
 
