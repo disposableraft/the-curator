@@ -37,6 +37,9 @@ class Graph:
         """
         return iter([self.nodes[key] for key in self.nodes])
 
+    def __getitem__(self, key):
+        return self.nodes[key]
+
     def add(self, node):
         assert isinstance(node, Node)
         self.nodes[node.id] = node
@@ -104,6 +107,11 @@ class TestGraph(unittest.TestCase):
         G = Graph(nodes)
         iterated = list(G)
         self.assertListEqual(nodes, iterated)
+
+    def test_get_item(self):
+        n0 = Node('xyz')
+        g = Graph([n0])
+        self.assertEqual(g['xyz'], n0)
 
     def test_bfs(self):
         n1 = Node(1)
