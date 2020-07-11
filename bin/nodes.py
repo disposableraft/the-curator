@@ -7,6 +7,7 @@ class Node:
         self.id = id
         self.degrees = 0
         self.edges = set()
+        self.type = self.__class__.__name__
 
     def __str__(self):
         return str(self.id)
@@ -103,7 +104,7 @@ class TestGraph(unittest.TestCase):
         G = Graph(nodes)
         iterated = list(G)
         self.assertListEqual(nodes, iterated)
-    
+
     def test_bfs(self):
         n1 = Node(1)
         n3 = Node(3)

@@ -47,7 +47,7 @@ class Moma:
 csv_path = constants.MOMA_EXHIBITIONS_CSV
 moma = Moma(pd.read_csv(csv_path, encoding="ISO-8859-1"))
 
-data_dir = constants.PROJECT_DATA
+data_dir = constants.PROJECT_DATA_PICKLES
 d = date.today()
 outfile = data_dir.joinpath(f'{d.year}{d.month}{d.day}-moma-exhibitions.pickle')
 

@@ -1,7 +1,7 @@
 import utils
 import constants as c
 
-graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('202078-moma-exhibitions.pickle')
+graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('2020710-moma-exhibitions.pickle')
 
 data = utils.load_graph(graph_pickle)
 
@@ -18,14 +18,14 @@ def artist_incoming_edges(artists, exhibitions):
                 incoming[token] += 1
     return incoming
 
-degrees = [n.degrees for n in data.nodes.values() if n.__class__.__name__ == 'Exhibition']
+degrees = [n.degrees for n in data.nodes.values() if n.type == 'Exhibition']
 X = sorted(degrees)
 
-artists = [(key, value) for key, value in data.nodes.items()  if value.__class__.__name__ == 'Artist']
-exhibitions = [n for n in data.nodes.values() if n.__class__.__name__ == 'Exhibition']
+artists = [(key, value) for key, value in data.nodes.items()  if value.type == 'Artist']
+exhibitions = [n for n in data.nodes.values() if n.type == 'Exhibition']
 
 artist_incoming = artist_incoming_edges(artists, exhibitions)
 
 artist_incoming_frequencies = [count for _token, count in artist_incoming.items()]
 
-utils.draw_hist(artist_incoming_frequencies, True)
+utils.draw_hist(artist_incoming_frequencies, show=True)
