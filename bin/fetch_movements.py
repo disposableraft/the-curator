@@ -1,7 +1,7 @@
 import utils
 import constants
 import requests
-from nodes import Node
+from graph import Node
 from random import randrange
 from string import Template
 

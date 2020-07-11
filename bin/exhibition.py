@@ -1,4 +1,4 @@
-from nodes import Node
+from graph import Node
 
 class Exhibition(Node):
     def __init__(self, id, title):

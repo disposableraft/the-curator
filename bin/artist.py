@@ -1,5 +1,5 @@
 import unittest
-from nodes import Node
+from graph import Node
 from gensim.parsing.preprocessing import preprocess_string
 
 class Artist(Node):

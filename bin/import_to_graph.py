@@ -3,7 +3,7 @@ import utils
 from pathlib import Path
 from datetime import date
 import pandas as pd
-from nodes import Graph
+from graph import Graph
 from artist import Artist
 from exhibition import Exhibition
 
