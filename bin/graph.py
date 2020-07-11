@@ -40,6 +40,16 @@ class Graph:
     def __getitem__(self, key):
         return self.nodes[key]
 
+    def get_nodes(self):
+        """
+        Returns a dict of nodes grouped by class name.
+        """
+        groups = dict()
+        for key, node in self.nodes.items():
+            group = groups.setdefault(node.type, dict())
+            group[key] = node
+        return groups
+
     def add(self, node):
         assert isinstance(node, Node)
         self.nodes[node.id] = node
@@ -112,6 +122,21 @@ class TestGraph(unittest.TestCase):
         n0 = Node('xyz')
         g = Graph([n0])
         self.assertEqual(g['xyz'], n0)
+
+    def test_get_nodes(self):
+        class A(Node):
+            pass
+        class B(Node):
+            pass
+        a = A('a')
+        b = B('b')
+        b1 = B('b1')
+        g = Graph([a, b, b1])
+        expected = {
+            'A': {'a': a},
+            'B': {'b': b, 'b1': b1}
+        }
+        self.assertDictEqual(g.get_nodes(), expected)
 
     def test_bfs(self):
         n1 = Node(1)
