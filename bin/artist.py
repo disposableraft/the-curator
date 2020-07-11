@@ -7,20 +7,18 @@ class Artist(Node):
         self.name = name
         self.id = self.tokenize()
         self.wikidataID = wikidataID
-
+        self.categories = set()
         super().__init__(self.id)
-    
+
     def tokenize(self):
         token = "".join(preprocess_string(self.name))
         return token
-        
 
 class TestArtist(unittest.TestCase):
-    def test_artist(self):
+    def test_tokenize(self):
         x = Artist('Elaine De Kooning')
         self.assertEqual(x.name, 'Elaine De Kooning')
         self.assertEqual(x.id, 'elainkoon')
-
 
 if __name__ == '__main__':
     unittest.main()

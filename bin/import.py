@@ -1,11 +1,11 @@
 from exhibition import Exhibition
 
 class Import:
-    def __init__(self, sizes_allowed=(2, 30)):
+    def __init__(self, size=(2, 30)):
         """
-        `sizes_allowed` import exhibitions between sizes (<min>, <max>).
+        `size` import exhibitions between sizes (<min>, <max>).
         """
-        self.sizes_allowed = sizes_allowed
+        self.size = size
         self.exhibitions = dict()
 
     def create_exhibition(self, row):
@@ -16,7 +16,7 @@ class Import:
         self.add(e)
     
     def add(self, exhibition):
-        minimum, maximum = self.sizes_allowed
+        minimum, maximum = self.size
         if minimum < exhibition.members and maximum > exhibition.members:
             id = exhibition.id
             self.exhibitions[id] = exhibition

@@ -3,6 +3,8 @@ from gensim.models import Word2Vec
 from artist import Artist
 
 """
+NOTE: This file to be rewritten using new graph models and data.
+
 Abstract Expressionism
 {toby, alice, juilia, cassandra, enid}
 """

@@ -1,5 +1,21 @@
 # Notes for The Curator
 
+## Definitions
+
+$A_n$ = *An artist, usually synonymous with $A_{cm}$*
+
+$A_s$ = *Set of artists predicted by the model to be similar to a given artist*
+
+$A_M$ = *All artists in the model*
+
+$A_C$ = *All artists in a category*
+
+$A_{CM}$ = *All artists in both category and model*
+
+*Similar*: Artist similarity is a function of the model. The cosine similarity between two vectors is the distance to which they are similar or dissimilar. 
+
+* * *
+
 ## To-do
 
 ### Graphing 
@@ -30,19 +46,26 @@ SELECT ?movement ?movementLabel WHERE {
 
 * * * 
 
-## Definitions
+## On Frequency
 
-$A_n$ = *An artist, usually synonymous with $A_{cm}$*
+There is an artist, $A_1$, who only has one incoming node. That node is from an exhibition that has M members. How many times will $A_1$ appear in the dataset? And how strongly will $A_1$ be associated to other nodes?
 
-$A_s$ = *Set of artists predicted by the model to be similar to a given artist*
+In a group of e members, with combinations r=5 $A_1$ would appear 70 times. That's not counting, the increased appearances via iteration of the context window. Based on this theoretical example, $A_1$ could add noise. 
 
-$A_M$ = *All artists in the model*
+## Calculating Density
 
-$A_C$ = *All artists in a category*
+$\frac{m}{n(n-1)}$
 
-$A_{CM}$ = *All artists in both category and model*
+This, from `networkx` package. 
 
-*Similar*: Artist similarity is a function of the model. The cosine similarity between two vectors is the distance to which they are similar or dissimilar. 
+> The density is 0 for a graph without edges and 1 for a complete graph.
+> The density of multigraphs can be higher than 1.
+
+I tried it on current data, where m = 13093 and n = 13849, resulting in 6.827059655017251e-05. So, 0.000068.
+
+![](images/k2-k4-raw-exhibition-data.png)
+
+It is indeed sparse!
 
 ## On an Assumption Concerning CBOW and Skip-Gram
 
