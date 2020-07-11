@@ -6,14 +6,16 @@ from wikidata import Wikidata
 path = c.PROJECT_DATA_PICKLES.joinpath('202078-moma-exhibitions.pickle')
 graph = utils.load_graph(path)
 
-artist_nodes = [value for value in graph.nodes.values()
-                if value.type == 'Artist'
-                and value.wikidataID != None]
 report = {
     'edges_added': 0,
     'categories_added': set(),
     'artists_not_updated': set()
     }
+
+artist_nodes = [value for value in graph
+                if value.type == 'Artist'
+                and value.wikidataID != None]
+
 for artist_node in artist_nodes:
     labels = Wikidata(artist_node.wikidataID).stub_fetch()
     if len(labels) == 0:

@@ -18,11 +18,11 @@ def artist_incoming_edges(artists, exhibitions):
                 incoming[token] += 1
     return incoming
 
-degrees = [n.degrees for n in data.nodes.values() if n.type == 'Exhibition']
+degrees = [n.degrees for n in data if n.type == 'Exhibition']
 X = sorted(degrees)
 
 artists = [(key, value) for key, value in data.nodes.items()  if value.type == 'Artist']
-exhibitions = [n for n in data.nodes.values() if n.type == 'Exhibition']
+exhibitions = [n for n in data if n.type == 'Exhibition']
 
 artist_incoming = artist_incoming_edges(artists, exhibitions)
 

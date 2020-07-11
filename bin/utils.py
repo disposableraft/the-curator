@@ -7,7 +7,7 @@ def load_graph(file):
     return graph
 
 def save_graph(graph, file):
-    with open(file, 'xb') as f:
+    with open(file, 'wb') as f:
         pickle.dump(graph, f, pickle.HIGHEST_PROTOCOL)
 
 def draw_hist(X, show=False, **kwargs):
