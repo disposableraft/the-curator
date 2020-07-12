@@ -1,33 +1,28 @@
 import utils
 import constants as c
+import matplotlib.pyplot as plt
 
-graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('2020710-moma-exhibitions.pickle')
+graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-word2vec.pickle')
 
 data = utils.load_graph(graph_pickle)
 
-def artist_incoming_edges(artists, exhibitions):
-    """
-    Returns an object { 'tokenizedname': int } where int is a count of
-    how many times token appear in exhibition nodes.
-    """
-    incoming = dict()
-    for token, _node in artists:
-        incoming.setdefault(token, 0)
-        for exhibition_node in exhibitions:
-            if token in exhibition_node.edges:
-                incoming[token] += 1
-    return incoming
+artists = data.get_nodes()['Artist']
 
-nodes_of_type = data.get_nodes()
+Y = []
+X = []
+for n in artists.values():
+    if n.degrees > 5 and n.degrees < 50:
+        Y.append(n.cosim_mean())
+        X.append(n.degrees)
 
-degrees = [n.degrees for n in nodes_of_type['Exhibition'].values()]
-X = sorted(degrees)
+r_value = utils.pearson_r(X, Y)
 
-artists = [(key, value) for key, value in nodes_of_type['Artist'].items()]
-exhibitions = [n for n in nodes_of_type['Exhibition'].values()]
+print(r_value)
 
-artist_incoming = artist_incoming_edges(artists, exhibitions)
+plt.title(f'Correlation of mean cosine similarity and degree. R={round(r_value,3)}')
 
-artist_incoming_frequencies = [count for _token, count in artist_incoming.items()]
+plt.scatter(X, Y, alpha=0.3)
 
-utils.draw_hist(artist_incoming_frequencies, show=True)
+# plt.hist(Y)
+plt.show()
+
