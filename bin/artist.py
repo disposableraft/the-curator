@@ -8,11 +8,20 @@ class Artist(Node):
         self.id = self.tokenize()
         self.wikidataID = wikidataID
         self.categories = set()
+        self.similar = list()
         super().__init__(self.id)
 
     def tokenize(self):
         token = "".join(preprocess_string(self.name))
         return token
+
+    def cosim_mean(self):
+        """
+        The cosine similarity mean
+        """
+        if len(self.similar) > 0:
+            return sum(s for _t,s in self.similar) / len(self.similar)
+        return 0
 
 class TestArtist(unittest.TestCase):
     def test_tokenize(self):
