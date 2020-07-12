@@ -11,3 +11,5 @@ PROJECT_DATA = PROJECT_PATH.joinpath('data')
 PROJECT_DATA_IMAGES = PROJECT_PATH.joinpath('images')
 PROJECT_DATA_MODELS = PROJECT_DATA.joinpath('models')
 PROJECT_DATA_PICKLES = PROJECT_DATA.joinpath('pickles')
+
+WORD2VEC_MODEL = PROJECT_DATA_MODELS.joinpath('moma-combos.model')
