@@ -10,17 +10,25 @@ class Node:
         self.type = self.__class__.__name__
 
     def __str__(self):
-        return str(self.id)
+        return str({
+            'id': self.id,
+            'degrees': self.degrees,
+            'edges': self.edges,
+            'type': self.type
+        })
 
     def __iter__(self):
         return iter([x for x in self.edges])
+
+    def increment_degree(self):
+        self.degrees += 1
 
     def add_edge(self, edge):
         # This should be called by graph, so the dictionary can be managed.
         class_name = inspect.stack()[1][0].f_locals['self'].__class__.__name__
         assert class_name == 'Graph'
-        self.degrees += 1
         self.edges.add(edge)
+        self.increment_degree()
 
 
 class Graph:
@@ -52,7 +60,11 @@ class Graph:
 
     def add(self, node):
         assert isinstance(node, Node)
-        self.nodes[node.id] = node
+        if node.id not in self.nodes:
+            self.nodes[node.id] = node
+            if node.id == 'helenfrankenthal':
+                print('adding helen')
+        return self.nodes[node.id]
 
     def add_nodes(self, nodes):
         for v in nodes:
@@ -67,10 +79,8 @@ class Graph:
             self.add_edge(node.id, x)
 
     def add_edge(self, key, node):
-        # Make sure that all nodes added as edges are also accounted for here in the graph
-        if node.id not in self:
-            self.add(node)
         self.nodes[key].add_edge(node.id)
+        node.increment_degree()
         return self.nodes[key].edges
 
     def bfs(self):
