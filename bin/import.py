@@ -37,7 +37,7 @@ class Moma:
             # Set up and create the artist node
             name = row['DisplayName']
             wikidataID = row['WikidataID']
-            artist_node = Artist(name, wikidataID=wikidataID)
+            artist_node = graph.add(Artist(name, wikidataID=wikidataID))
             # Create an edge from exhibition to artist
             graph.add_edge(ex_node.id, artist_node)
 
