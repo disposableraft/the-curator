@@ -2,7 +2,7 @@ import constants
 from pygraphviz import AGraph
 import utils
 
-file = constants.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions.pickle')
+file = constants.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions-categories-word2vec.pickle')
 data = utils.load_graph(file)
 G4 = AGraph()
 

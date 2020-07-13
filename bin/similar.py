@@ -15,7 +15,7 @@ class Similar(Node):
 # Save the updated graph
 
 model = Word2Vec.load(str(c.WORD2VEC_MODEL))
-pickled_graph = c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions.pickle')
+pickled_graph = c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions-categories.pickle')
 graph = utils.load_graph(pickled_graph)
 
 nodes_of_type = graph.get_nodes()
@@ -28,4 +28,4 @@ for _token, node in artists:
     except KeyError as err:
         print(f'Error selecting similar artist: {err}')
 
-utils.save_graph(graph, c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-word2vec.pickle'))
+utils.save_graph(graph, c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions-categories-word2vec.pickle'))
