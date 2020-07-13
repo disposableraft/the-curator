@@ -7,6 +7,9 @@ class Wikidata:
         self.id = id
         self.categories = []
 
+    def __str__(self):
+        return str({'id': self.id})
+
     def stub_fetch(self):
         # Return an array with 1 to 3 items, each item being a random number between 1 and 23 representing a category
         stop = randrange(0,4)
@@ -32,8 +35,8 @@ class Wikidata:
             req = requests.get(url, params=params)
             data = req.json()
             results = data['results']['bindings']
-            categories = [i['movementLabel']['value'] for i in results]
-            return categories
+            if len(results) > 0:
+                categories = [i['movementLabel']['value'] for i in results]
+                return categories
         except Exception as E:
-            print(f'An error occured fetching {self.id}. \nError:\n{E}\n')
-            return []
+            print(f'Error fetching {self.id}. Error: {E}. Object: {self}')
