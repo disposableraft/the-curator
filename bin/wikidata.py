@@ -40,3 +40,5 @@ class Wikidata:
                 return categories
         except Exception as E:
             print(f'Error fetching {self.id}. Error: {E}. Object: {self}')
+
+        return False
