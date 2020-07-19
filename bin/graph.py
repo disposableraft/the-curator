@@ -112,6 +112,8 @@ class Graph:
     def density(self):
         m = self.count_edges()
         n = self.count_nodes()
+        # The term `m * 2` is for undirected graphs.
+        # For digraphs it would be simple `m`.
         density = (m * 2) / (n * (n - 1))
         return density
 
