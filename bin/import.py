@@ -1,7 +1,6 @@
 import constants
 import utils
 from pathlib import Path
-from datetime import date
 import pandas as pd
 from graph import Graph
 from artist import Artist
@@ -44,16 +43,14 @@ class Moma:
         return graph
 
 
-csv_path = constants.MOMA_EXHIBITIONS_CSV
-moma = Moma(pd.read_csv(csv_path, encoding="ISO-8859-1"))
-
-data_dir = constants.PROJECT_DATA_PICKLES
-d = date.today()
-outfile = data_dir.joinpath(f'{d.year}{d.month}{d.day}-moma-exhibitions.pickle')
+path = constants.MOMA_EXHIBITIONS_CSV
+moma = Moma(pd.read_csv(path, encoding="ISO-8859-1"))
 
 graph = Graph()
 
 for exhibition_number in moma.list_exhibitions():
     moma.graph_exhibition(graph, exhibition_number)
 
-utils.save_graph(graph, outfile)
+fn = utils.save_graph(graph, name='moma-exhibitions')
+
+print(f'Imported MoMA Exhibitions data to {fn}')

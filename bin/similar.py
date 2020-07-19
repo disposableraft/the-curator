@@ -14,9 +14,8 @@ class Similar(Node):
 #   Record the similar artist token and cosim in a dictionary of the artist node in the graph
 # Save the updated graph
 
-model = Word2Vec.load(str(c.WORD2VEC_MODEL))
-pickled_graph = c.PROJECT_DATA_PICKLES.joinpath('2020713-moma-exhibitions-categories.pickle')
-graph = utils.load_graph(pickled_graph)
+model = Word2Vec.load(str(c.WORD2VEC))
+graph = utils.load_graph()
 
 nodes_of_type = graph.get_nodes()
 artists = nodes_of_type['Artist'].items()
@@ -28,4 +27,4 @@ for _token, node in artists:
     except KeyError as err:
         print(f'Error selecting similar artist: {err}')
 
-utils.save_graph(graph, c.PROJECT_DATA_PICKLES.joinpath('2020713-moma-exhibitions-categories-word2vec.pickle'))
+utils.save_graph(graph, name='moma-exhibitions-categories-word2vec')

@@ -28,12 +28,11 @@ class FetchLabels:
         }
 
     def save_tmp_file(self, obj, name):
-        utils.save_graph(obj, c.PROJECT_TMP.joinpath(name))
-        pass
+        utils.write(c.PROJECT_TMP.joinpath(name), obj)
 
     def run(self):
         for node in self.nodes:
-            time.sleep(1.5)
+            time.sleep(0.5)
             self.progress += 1
             
             if self.progress % 50 == 0:

@@ -1,9 +1,7 @@
 import utils
-import constants as c
 import matplotlib.pyplot as plt
 
-graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-exhibitions.pickle')
-graph = utils.load_graph(graph_pickle)
+graph = utils.load_graph()
 
 nodes_of_type = graph.get_nodes()
 

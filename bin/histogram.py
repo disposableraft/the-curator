@@ -1,10 +1,8 @@
 import utils
-import constants as c
 import matplotlib.pyplot as plt
+from scipy import stats
 
-graph_pickle = c.PROJECT_DATA_PICKLES.joinpath('2020712-moma-word2vec.pickle')
-
-data = utils.load_graph(graph_pickle)
+data = utils.load_graph()
 
 artists = data.get_nodes()['Artist']
 
@@ -15,7 +13,7 @@ for n in artists.values():
         Y.append(n.cosim_mean())
         X.append(n.degrees)
 
-r_value = utils.pearson_r(X, Y)
+(r_value, p_value) = stats.pearsonr(X, Y)
 
 print(r_value)
 

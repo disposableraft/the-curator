@@ -2,8 +2,7 @@ import constants
 from pygraphviz import AGraph
 import utils
 
-file = constants.PROJECT_DATA_PICKLES.joinpath('2020713-moma-exhibitions-categories-word2vec.pickle')
-graph = utils.load_graph(file)
+graph = utils.load_graph()
 
 G4 = AGraph(directed=True, concentrate=True)
 G4.graph_attr['bgcolor']='aliceblue'
