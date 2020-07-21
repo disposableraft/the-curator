@@ -9,7 +9,7 @@ PROJECT = USER_PATH.joinpath('writing1/projects/the-curator')
 DATA = PROJECT.joinpath('data')
 PROJECT_TMP = DATA.joinpath('tmp')
 
-PROJECT_DATA_IMAGES = PROJECT.joinpath('images')
+PROJECT_DATA_IMAGES = DATA.joinpath('images')
 
 MODELS = DATA.joinpath('models')
 PICKLES = DATA.joinpath('pickles')

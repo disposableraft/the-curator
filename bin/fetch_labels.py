@@ -6,6 +6,14 @@ from wikidata import Wikidata
 
 class FetchLabels:
     def __init__(self, nodes, graph):
+        """
+        Fetch labels from Wikidata
+
+        `nodes` is expected to include a `wikidataID`.
+        
+        `graph` is expected to contain the nodes which are being 
+            updated with labels.
+        """
         self.nodes = nodes
         self.graph = graph
         self.total_nodes = len(nodes)
