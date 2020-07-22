@@ -23,12 +23,19 @@ class Node:
     def increment_degree(self):
         self.degrees += 1
 
+    def decrement_degree(self):
+        self.degrees -= 1
+
     def add_edge(self, edge):
         # This should be called by graph, so the dictionary can be managed.
         class_name = inspect.stack()[1][0].f_locals['self'].__class__.__name__
         assert class_name == 'Graph'
         self.edges.add(edge)
         self.increment_degree()
+
+    def remove_edge(self, edge):
+        self.edges.remove(edge)
+        self.decrement_degree()
 
 
 class Graph:
@@ -79,9 +86,20 @@ class Graph:
             self.add_edge(node.id, x)
 
     def add_edge(self, key, node):
+        if node.id not in self.nodes:
+            self.add(node)
         self.nodes[key].add_edge(node.id)
         node.increment_degree()
         return self.nodes[key].edges
+
+    def remove_node(self, node):
+        """
+        Remove a node from the graph
+        """
+        for v in self:
+            if node.id in v.edges:
+                v.remove_edge(node.id)
+        self.nodes.pop(node.id)
 
     def bfs(self):
         """
@@ -94,8 +112,8 @@ class Graph:
             key = q.popleft()
             if key not in visited:
                 visited.append(key)
-                if len(self.nodes[key].edges) > 0:
-                    for m in self.nodes[key].edges:
+                if len(self[key].edges) > 0:
+                    for m in self[key].edges:
                         if m not in q:
                             q.appendleft(m)
         return visited
@@ -106,7 +124,7 @@ class Graph:
     def count_edges(self):
         count = 0
         for node in self:
-            count += node.degrees
+            count += len(node.edges)
         return count
 
     def density(self):
@@ -211,6 +229,18 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(3, len(G.nodes))
         self.assertEqual(2, len(edges))
 
+    def test_remove_node(self):
+        n3 = Node(3)
+        G = Graph([Node(1)])
+        G.add_edge(1, Node(2))
+        G.add_edge(2, n3)
+        G.add_edge(1, n3)
+        self.assertEqual(G[1].degrees, 2)
+        
+        G.remove_node(n3)
+        self.assertEqual(G[1].degrees, 1)
+        self.assertEqual(G.count_nodes(), 2)
+        self.assertEqual(G.count_edges(), 1)
 
 class TestNode(unittest.TestCase):
     def test_init(self):
@@ -222,11 +252,6 @@ class TestNode(unittest.TestCase):
         x = Node(1)
         y = Node(2)
         self.assertRaises(AssertionError, x.add_edge, y)
-
-    def test_str(self):
-        x = Node(23)
-        self.assertEqual('23', str(x))
-
 
 if __name__ == '__main__':
     unittest.main()
