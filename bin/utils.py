@@ -32,10 +32,10 @@ def save_graph(graph, name):
     file = c.VERSIONS.joinpath(f'{date_slug()}-{name}.pickle')
     write(file, graph)
     try:
-        os.link(file, c.CURRENT)
+        os.symlink(file, c.CURRENT)
     except FileExistsError:
         os.unlink(c.CURRENT)
-        os.link(file, c.CURRENT)
+        os.symlink(file, c.CURRENT)
 
     return file
 
