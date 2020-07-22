@@ -7,6 +7,7 @@ MOMA_EXHIBITIONS_CSV = MOMA_DATA.joinpath('exhibitions/MoMAExhibitions1929to1989
 
 PROJECT = USER_PATH.joinpath('writing1/projects/the-curator')
 DATA = PROJECT.joinpath('data')
+TRAIN = DATA.joinpath('train')
 PROJECT_TMP = DATA.joinpath('tmp')
 
 PROJECT_DATA_IMAGES = DATA.joinpath('images')
@@ -16,4 +17,4 @@ PICKLES = DATA.joinpath('pickles')
 VERSIONS = PICKLES.joinpath('versions')
 CURRENT = PICKLES.joinpath('versions/current.pickle')
 
-WORD2VEC = MODELS.joinpath('moma-combos.model')
+WORD2VEC = MODELS.joinpath('20200721.word2vec')
