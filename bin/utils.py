@@ -8,11 +8,12 @@ def date_slug():
     d = date.today()
     return f'{d.year}-{d.month}-{d.day}'
 
-def load_graph():
+def load_graph(fn=None):
     """
     Read the current version of the graph from disk.
     """
-    with open(c.CURRENT, 'rb') as f:
+    file = fn if fn else c.CURRENT
+    with open(file, 'rb') as f:
         graph = pickle.load(f)
     return graph
 
@@ -36,7 +37,7 @@ def save_graph(graph, name):
     except FileExistsError:
         os.unlink(c.CURRENT)
         os.symlink(file, c.CURRENT)
-
+    print(f'Linking current.pickle -> {file}')
     return file
 
 
