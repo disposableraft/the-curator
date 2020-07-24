@@ -51,6 +51,6 @@ graph = Graph()
 for exhibition_number in moma.list_exhibitions():
     moma.graph_exhibition(graph, exhibition_number)
 
-fn = utils.save_graph(graph, name='moma-exhibitions')
+fn = utils.save_graph(graph, 'import.pickle')
 
 print(f'Imported MoMA Exhibitions data to {fn}')

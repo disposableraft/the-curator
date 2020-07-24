@@ -2,12 +2,7 @@ import utils
 import constants as c
 from itertools import combinations
 
-class Export:
-    def __init__(self, directory):
-        self.directory = directory
-
-
-graph = utils.load_graph()
+graph = utils.load_graph('import.pickle')
 
 # Prepare the graph.
 # Prune artists belonging to 2 or fewer shows
@@ -38,5 +33,3 @@ for index, e in enumerate(exhibitions):
             f.write(" ".join(line))
             f.write("\n")
 
-#
-# Save export files ...

@@ -1,13 +1,12 @@
 import utils
-import pickle
 import constants as c
-from category import Category
+import pickle
 from wikidata import Wikidata
 from fetch_labels import FetchLabels
 
-report_path = c.PROJECT_TMP.joinpath('fetch-movements-report.pickle')
+report_path = c.CURRENT.joinpath('fetch-movements-report.pickle')
 
-graph = utils.load_graph()
+graph = utils.load_graph('import.pickle')
 
 nodes = [value for value in graph
                 if value.type == 'Artist'
@@ -21,7 +20,7 @@ nodes = [value for value in graph
 fetcher = FetchLabels(nodes, graph)
 (new_graph, report) = fetcher.run()
 
-utils.save_graph(new_graph, name='moma-exhibitions-movements')
+utils.save_graph(new_graph, 'labeled-import.pickle')
 
 with open(report_path, 'wb') as f:
     pickle.dump(report, f, pickle.HIGHEST_PROTOCOL)

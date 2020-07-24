@@ -1,4 +1,5 @@
 import os
+import json
 import gensim, logging
 from smart_open import open
 import utils
@@ -7,8 +8,6 @@ import constants as c
 """
 CONFIGS
 """
-model_name = '20200721-skipgram.word2vec'
-
 # TODO: Add params to model
 params = {
     'sg': 1,
@@ -44,7 +43,7 @@ model = gensim.models.Word2Vec(
         window=5
     )
 
-model.save(str(c.MODELS.joinpath(model_name)))
+model.save(str(c.CURRENT.joinpath('word2vec.pickle')))
 
-# This would be cooler as json
-utils.write(c.MODELS.joinpath(f'{model_name}-notes'), params)
+with open(c.CURRENT.joinpath('training-notes.json'), 'w') as f:
+    f.write(json.dumps(params))

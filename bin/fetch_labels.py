@@ -36,7 +36,7 @@ class FetchLabels:
         }
 
     def save_tmp_file(self, obj, name):
-        utils.write(c.PROJECT_TMP.joinpath(name), obj)
+        utils.write(c.CURRENT.joinpath(name), obj)
 
     def run(self):
         for node in self.nodes:

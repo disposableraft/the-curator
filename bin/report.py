@@ -102,7 +102,7 @@ report = {
 }
 
 # Assumes current graph file
-graph = utils.load_graph()
+graph = utils.load_graph('similar-labeled-import.pickle')
 types = graph.get_nodes()
 categories = types['Category'].values()
 exhibitions = types['Exhibition']
@@ -129,8 +129,8 @@ report['graph']['labeled_artists']  = len(labeled_artists)
 # Open model's report
 # TODO the model provides some useful stats on vocab, etc
 # TODO use json for gawds sakes!
-with open(c.MODELS.joinpath(f'{model_name}-notes'), 'rb') as f:
-    model_notes = pickle.load(f)
+with open(c.CURRENT.joinpath('training-notes.json'), 'r') as f:
+    model_notes = json.loads(f)
 
 report['model']['sg'] = model_notes['sg']
 report['model']['workers'] = model_notes['workers']

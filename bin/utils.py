@@ -7,11 +7,11 @@ def date_slug():
     d = date.today()
     return f'{d.year}-{d.month}-{d.day}'
 
-def load_graph(fn=None):
+def load_graph(name):
     """
     Read the current version of the graph from disk.
     """
-    file = fn if fn else c.CURRENT
+    file = c.CURRENT.joinpath(name)
     with open(file, 'rb') as f:
         graph = pickle.load(f)
     return graph
@@ -25,18 +25,8 @@ def write(file, data):
 
 def save_graph(graph, name):
     """
-    Save a new graph to disk.
-
-    Updates the hard link and returns the filename.
+    Save a new graph to the current version dir.
     """
-    file = c.VERSIONS.joinpath(f'{date_slug()}-{name}.pickle')
+    file = c.CURRENT.joinpath(name)
     write(file, graph)
-    try:
-        os.symlink(file, c.CURRENT)
-    except FileExistsError:
-        os.unlink(c.CURRENT)
-        os.symlink(file, c.CURRENT)
-    print(f'Linking current.pickle -> {file}')
     return file
-
-

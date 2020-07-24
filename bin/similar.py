@@ -3,10 +3,9 @@ import constants as c
 from graph import Node
 from gensim.models import Word2Vec
 
-model = Word2Vec.load(str(c.MODELS.joinpath('20200721-skipgram.word2vec')))
+model = Word2Vec.load(str(c.CURRENT.joinpath('word2vec.pickle')))
 
-fn = c.VERSIONS.joinpath('2020-7-21-moma-exhibitions-categories.pickle')
-graph = utils.load_graph(fn)
+graph = utils.load_graph('labeled-import.pickle')
 
 nodes_of_type = graph.get_nodes()
 artists = nodes_of_type['Artist'].items()
@@ -18,4 +17,4 @@ for _token, node in artists:
     except KeyError as err:
         print(f'Error selecting similar artist: {err}')
 
-utils.save_graph(graph, name='moma-exhibitions-categories-word2vec-sg')
+utils.save_graph(graph, 'similar-labeled-import.pickle')
