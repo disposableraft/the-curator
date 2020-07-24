@@ -1,6 +1,5 @@
 import os
 import pickle
-import matplotlib.pyplot as plt
 from datetime import date
 import constants as c
 
@@ -40,20 +39,4 @@ def save_graph(graph, name):
     print(f'Linking current.pickle -> {file}')
     return file
 
-
-def draw_hist(X, show=False, **kwargs):
-    # Get a list of all the artists' degrees
-    hist = plt.hist(X, **kwargs)
-    if show:
-        plt.show()
-    else:
-        return hist
-
-def draw_boxplot(X, show=False, **kwargs):
-    # Get a list of all the artists' degrees
-    boxplot = plt.boxplot(X, **kwargs)
-    if show:
-        plt.show()
-    else:
-        return boxplot
 
