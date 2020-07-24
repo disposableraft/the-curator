@@ -7,7 +7,7 @@ MOMA_EXHIBITIONS_CSV = MOMA_DATA.joinpath('exhibitions/MoMAExhibitions1929to1989
 
 PROJECT = USER_PATH.joinpath('writing1/projects/the-curator')
 DATA = PROJECT.joinpath('data')
-TRAIN = DATA.joinpath('train')
+TRAIN = DATA.joinpath('train-01')
 PROJECT_TMP = DATA.joinpath('tmp')
 
 PROJECT_DATA_IMAGES = DATA.joinpath('images')
