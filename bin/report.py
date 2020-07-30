@@ -12,23 +12,16 @@ CONFIGS
 """
 report_dir = c.CURRENT
 model_name = '20200721-skipgram.word2vec'
-dataset = 'train-01'
+version = c.VERSION_NUMBER
 """
 /CONFIGS
 """
 
 # Yolo
 try:
-    os.mkdir(report_dir)
+    os.mkdir(report_dir.joinpath('images'))
 except FileExistsError:
-    print(f'Directory exists: {report_dir}')
-
-def get_labeled_nodes(cats):
-    labeled = set()
-    for c in cats:
-        for m in c.edges:
-            labeled.add(m)
-    return labeled
+    print(f'Directory exists: {report_dir}/images')
 
 def mean(s):
     return sum([x for x in s]) / len(s)
@@ -87,11 +80,10 @@ def report_error_rates(lines, report_dict):
 The report dict is the star of the show.
 """
 report = {
-    'title': title,
     'graph': {},
+    'version': version,
     'model': {
-        'name': model_name,
-        'dataset': dataset
+        'name': model_name
     },
     'results': {
         'linregress': {},
@@ -108,14 +100,11 @@ exhibitions = types['Exhibition']
 artists = types['Artist'].values()
 
 # Labeled and Unlabeled
-# TODO this is same as `get_labeled_nodes()`
-labeled_artists = get_labeled_nodes(categories)
+labeled_artists = utils.get_labeled_nodes(categories)
 artists_degree_gt_1 = set([a.id for a in artists if a.degrees > 2])
 unlabeled_artists = artists_degree_gt_1 ^ labeled_artists
 
 # Graph name
-graph_path = os.readlink(c.CURRENT)
-report['graph']['name'] = graph_path.split('/')[-1]
 report['graph']['vertices'] = graph.count_edges()
 report['graph']['nodes'] = graph.count_nodes()
 report['graph']['density'] = graph.density()
@@ -127,18 +116,17 @@ report['graph']['labeled_artists']  = len(labeled_artists)
 
 # Open model's report
 # TODO the model provides some useful stats on vocab, etc
-# TODO use json for gawds sakes!
 with open(c.CURRENT.joinpath('training-notes.json'), 'r') as f:
-    model_notes = json.loads(f)
+    model_notes = json.loads(f.read())
 
 report['model']['sg'] = model_notes['sg']
 report['model']['workers'] = model_notes['workers']
 report['model']['size'] = model_notes['size']
-report['model']['min_count'] = model_notes['min_count']
+# report['model']['min_count'] = model_notes['min_count']
 report['model']['epochs'] = model_notes['epochs']
 
 # Error rates per category
-labeled_nodes = get_labeled_nodes(categories)
+labeled_nodes = utils.get_labeled_nodes(categories)
 err_by_category = []
 for category in categories:
     if category.degrees > 1:
@@ -166,12 +154,11 @@ report = report_error_rates([err_total], report)
 # Error Rate Histogram
 plt.title('Error rate distribution')
 plt.hist(all_scores, cumulative=False)
-plt.savefig(report_dir.joinpath('./error-distribution.png'))
+plt.savefig(report_dir.joinpath('images/error-distribution.png'))
 plt.close()
 
 # Error rate distribution
-corr_scatter_name = 'scatter-err-per-cat.png'
-corr_scatter = report_dir.joinpath(corr_scatter_name)
+corr_scatter = report_dir.joinpath('images/scatter-err-per-cat.png')
 
 filtered_cat_scores = [x for x in err_by_category if x['mean'] < 1]
 corr_X = [s['mean'] for s in filtered_cat_scores]
@@ -189,12 +176,10 @@ report['results']['linregress'] = {k:v for k,v in zip(lg._fields, lg)}
 category_graphs = str()
 for x in err_by_category:
     if len(x['scores']) > 9:
-        image_name = f"{x['cat'].replace(' ', '')}.png"
+        image_name = f"images/{x['cat'].replace(' ', '')}.png"
         image_path = report_dir.joinpath(image_name)
         grapher = DrawCategorySimilars(graph, x['cat'], image_path)
         grapher.run()
-        category_graphs += (f'![](./{image_name})\n\n')
-
 
 # And, finally!
 with open(report_dir.joinpath('report.json'), 'w') as f:

@@ -5,22 +5,6 @@ from smart_open import open
 import utils
 import constants as c
 
-"""
-CONFIGS
-"""
-# TODO: Add params to model
-params = {
-    'sg': 1,
-    'workers': 3,
-    'size': 100,
-    'min_count': 1,
-    'epochs': 5
-}
-
-"""
-/CONFIGS
-"""
-
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 class Sentences(object):
@@ -32,12 +16,14 @@ class Sentences(object):
             for line in open(os.path.join(self.dirname, fname), 'r'):
                 yield line.split()
 
+params = c.config['params']
+
 sentences = Sentences(c.TRAIN)
 
 model = gensim.models.Word2Vec(
-        sentences, 
-        min_count=params['min_count'], 
-        workers=params['workers'], 
+        sentences,
+        min_count=params['min_count'],
+        workers=params['workers'],
         sg=params['sg'],
         iter=params['epochs'],
         window=5
@@ -45,5 +31,17 @@ model = gensim.models.Word2Vec(
 
 model.save(str(c.CURRENT.joinpath('word2vec.pickle')))
 
+training_notes = {
+    'total_train_time': model.total_train_time,
+    'epochs': model.epochs,
+    'size': model.vector_size,
+    'sg': model.sg,
+    'workers': model.workers,
+    'window': model.window,
+    'wv': {
+        'vocab_length': len(model.wv.vocab),
+    }
+}
+
 with open(c.CURRENT.joinpath('training-notes.json'), 'w') as f:
-    f.write(json.dumps(params))
+    f.write(json.dumps(training_notes))

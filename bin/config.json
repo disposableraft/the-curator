@@ -1,0 +1,10 @@
+{
+  "version": 1.9,
+  "params": {
+    "sg": 0,
+    "workers": 3,
+    "size": 100,
+    "min_count": 1,
+    "epochs": 8
+  }
+}

@@ -1,7 +1,5 @@
+import json
 from pathlib import Path
-
-# <train version>.<model version>
-VERSION_NUMBER = 1.1
 
 USR = Path('~/').expanduser()
 
@@ -12,5 +10,11 @@ DATA = PROJECT.joinpath('data')
 TRAIN = DATA.joinpath('train-01')
 
 PROJECT_DATA_IMAGES = DATA.joinpath('images')
+
+with open(PROJECT.joinpath('bin/config.json'), 'r') as f:
+    config = json.loads(f.read())
+
+# <train version>.<model version>
+VERSION_NUMBER = config['version']
 
 CURRENT = DATA.joinpath(f'versions/{str(VERSION_NUMBER)}')
