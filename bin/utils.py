@@ -30,3 +30,10 @@ def save_graph(graph, name):
     file = c.CURRENT.joinpath(name)
     write(file, graph)
     return file
+
+def get_labeled_nodes(cats):
+    labeled = set()
+    for c in cats:
+        for m in c.edges:
+            labeled.add(m)
+    return labeled

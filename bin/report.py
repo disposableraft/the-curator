@@ -10,8 +10,7 @@ from draw_category_similars import DrawCategorySimilars
 """
 CONFIGS
 """
-report_dir = c.DATA.joinpath('report-02')
-title = 'Report 01 for 20200721-skipgram.word2vec'
+report_dir = c.CURRENT
 model_name = '20200721-skipgram.word2vec'
 dataset = 'train-01'
 """
