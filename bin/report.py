@@ -1,5 +1,4 @@
 import os
-import pickle
 import json
 import utils
 from scipy import stats
@@ -7,180 +6,148 @@ import matplotlib.pyplot as plt
 import constants as c
 from draw_category_similars import DrawCategorySimilars
 
-"""
-CONFIGS
-"""
-report_dir = c.CURRENT
-model_name = '20200721-skipgram.word2vec'
-version = c.VERSION_NUMBER
-"""
-/CONFIGS
-"""
+class Report:
+    def __init__(self, report_dir=c.CURRENT, version=c.VERSION_NUMBER):
+        self.report_dir = report_dir
+        self.version = version
+        self.graph = utils.load_graph('similar-labeled-import.pickle')
+        types = self.graph.get_nodes()
+        self.categories = types['Category'].values()
+        self.exhibitions = types['Exhibition']
+        self.artists = types['Artist'].values()
+        self.report = {
+            'graph': {},
+            'version': self.version,
+            'model': {},
+            'results': {
+                'linregress': {},
+                'error_rates' : {},
+            }
+        }
 
-# Yolo
-try:
-    os.mkdir(report_dir.joinpath('images'))
-except FileExistsError:
-    print(f'Directory exists: {report_dir}/images')
+    def mean(self, s):
+        return sum([x for x in s]) / len(s)
 
-def mean(s):
-    return sum([x for x in s]) / len(s)
+    def variance(self, s):
+        difference_sq = [(x - self.mean(s))**2 for x in s]
+        return sum(difference_sq) / len(s)
 
-def diff_sq(s):
-    return [(x - mean(s))**2 for x in s]
+    def get_category_error_rates(self):
+        error_rates = {
+            'all': {
+                'scores': []
+            },
+        }
+        for category in self.categories:
+            if category.degrees > 1:
+                cat_score = self.score_category(category)
+                error_rates[category.id] = cat_score
+                error_rates['all']['scores'] += cat_score['scores']
+        error_rates['all']['mean'] = self.mean(error_rates['all']['scores'])
+        error_rates['all']['variance'] = self.variance(error_rates['all']['scores'])
+        return error_rates
 
-def variance(s):
-    return sum(diff_sq(s)) / len(s)
+    def score_category(self, cat):
+        all_labeled_nodes = utils.get_labeled_nodes(self.categories)
+        # Score is defined as `misses / (hits + misses)`
+        scores = []
+        for n in cat.edges:
+            A = self.graph[n]
+            hits = []
+            misses = []
+            for token, score in A.similar:
+                # Hits: token is in cat.edges
+                if token in cat.edges:
+                    hits.append(score)
+                # Misses: token is labeled but not as this category
+                if token in all_labeled_nodes and token not in cat.edges:
+                    misses.append(score)
+            if len(misses) + len(hits) == 0:
+                continue
+            else:
+                score = sum(misses) / (sum(hits) + sum(misses))
+                scores.append(score)
 
-def score_category(graph, cat, all_labeled_nodes):
-    # Score is misses / (hits + misses)
-    scores = []
-    for m in cat.edges:
-        A = graph[m]
-        hits = []
-        misses = []
-        for token, score in A.similar:
-            # Hits: token is in cat.edges
-            if token in cat.edges:
-                hits.append(score)
-            # Misses: token is labeled but not as this category
-            if token in all_labeled_nodes and token not in cat.edges:
-                misses.append(score)
-        if len(misses) + len(hits) == 0:
-            # Return 1 for a full on error
-            # score = 1
-            continue
-        else:
-            score = len(misses) / (len(hits) + len(misses))
-            scores.append(score)
+        if len(scores) == 0:
+            return None
 
-    if len(scores) == 0:
-        return None
+        return {
+            # 'cat': cat.id,
+            'degrees': cat.degrees,
+            'mean': self.mean(scores),
+            'variance': self.variance(scores),
+            'scores': scores,
+        }
 
-    return {
-        'cat': cat.id,
-        'degrees': cat.degrees,
-        'mean': mean(scores),
-        'variance': variance(scores),
-        'scores': scores,
-        'total_hits_misses': len(hits) + len(misses)
-    }
+    def run(self):
+        # Yolo
+        try:
+            os.mkdir(self.report_dir.joinpath('images'))
+        except FileExistsError:
+            print(f'Directory exists: {self.report_dir}/images')
 
-def report_error_rates(lines, report_dict):
-    errs = report_dict['results']['error_rates']
-    for line in lines:
-        cat = line['cat']
-        errs[cat] = {}
-        errs[cat]['mean'] = line['mean']
-        errs[cat]['variance'] = line['variance']
-        errs[cat]['scores'] = line['scores']
-    return report_dict
+        # Labeled and Unlabeled
+        labeled_artists = utils.get_labeled_nodes(self.categories)
+        artists_degree_gt_1 = set([a.id for a in self.artists if a.degrees > 2])
+        unlabeled_artists = artists_degree_gt_1 ^ labeled_artists
 
-"""
-The report dict is the star of the show.
-"""
-report = {
-    'graph': {},
-    'version': version,
-    'model': {
-        'name': model_name
-    },
-    'results': {
-        'linregress': {},
-        'error_rates' : {
-        },
-    }
-}
+        # Graph name
+        self.report['graph']['vertices'] = self.graph.count_edges()
+        self.report['graph']['nodes'] = self.graph.count_nodes()
+        self.report['graph']['density'] = self.graph.density()
+        self.report['graph']['exhibitions']  = len(self.exhibitions)
+        self.report['graph']['categories']  = len(self.categories)
+        self.report['graph']['artists']  = len(self.artists)
+        self.report['graph']['unlabeled_artists']  = len(unlabeled_artists)
+        self.report['graph']['labeled_artists']  = len(labeled_artists)
 
-# Assumes current graph file
-graph = utils.load_graph('similar-labeled-import.pickle')
-types = graph.get_nodes()
-categories = types['Category'].values()
-exhibitions = types['Exhibition']
-artists = types['Artist'].values()
+        # Open model's report
+        # TODO the model provides some useful stats on vocab, etc
+        with open(c.CURRENT.joinpath('training-notes.json'), 'r') as f:
+            model_notes = json.loads(f.read())
 
-# Labeled and Unlabeled
-labeled_artists = utils.get_labeled_nodes(categories)
-artists_degree_gt_1 = set([a.id for a in artists if a.degrees > 2])
-unlabeled_artists = artists_degree_gt_1 ^ labeled_artists
+        self.report['model']['sg'] = model_notes['sg']
+        self.report['model']['workers'] = model_notes['workers']
+        self.report['model']['size'] = model_notes['size']
+        # self.report['model']['min_count'] = model_notes['min_count']
+        self.report['model']['epochs'] = model_notes['epochs']
 
-# Graph name
-report['graph']['vertices'] = graph.count_edges()
-report['graph']['nodes'] = graph.count_nodes()
-report['graph']['density'] = graph.density()
-report['graph']['exhibitions']  = len(exhibitions)
-report['graph']['categories']  = len(categories)
-report['graph']['artists']  = len(artists)
-report['graph']['unlabeled_artists']  = len(unlabeled_artists)
-report['graph']['labeled_artists']  = len(labeled_artists)
+        # Error rates per category
+        self.report['results']['error_rates'] = self.get_category_error_rates()
 
-# Open model's report
-# TODO the model provides some useful stats on vocab, etc
-with open(c.CURRENT.joinpath('training-notes.json'), 'r') as f:
-    model_notes = json.loads(f.read())
+        # Error Rate Histogram
+        plt.title('Error rate distribution')
+        plt.hist(self.report['results']['error_rates']['all']['scores'], cumulative=False)
+        plt.savefig(self.report_dir.joinpath('images/error-distribution.png'))
+        plt.close()
 
-report['model']['sg'] = model_notes['sg']
-report['model']['workers'] = model_notes['workers']
-report['model']['size'] = model_notes['size']
-# report['model']['min_count'] = model_notes['min_count']
-report['model']['epochs'] = model_notes['epochs']
+        # Error rate distribution
+        corr_scatter = self.report_dir.joinpath('images/scatter-err-per-cat.png')
 
-# Error rates per category
-labeled_nodes = utils.get_labeled_nodes(categories)
-err_by_category = []
-for category in categories:
-    if category.degrees > 1:
-        score = score_category(graph, category, labeled_nodes)
-        if score:
-            err_by_category.append(score)
-report = report_error_rates(err_by_category, report)
+        filtered_cat_scores = [v for k, v in self.report['results']['error_rates'].items() if v['mean'] < 1 and k != 'all']
+        corr_X = [s['mean'] for s in filtered_cat_scores]
+        corr_Y = [len(s['scores']) for s in filtered_cat_scores]
 
-# Error rates total
-all_scores = []
-for category in categories:
-    if category.degrees > 1:
-        cat_score = score_category(graph, category, labeled_nodes)
-        if cat_score:
-            for x in cat_score['scores']:
-                all_scores.append(x)
-err_total = {
-    'cat': 'all',
-    'mean': mean(all_scores),
-    'variance': variance(all_scores),
-    'scores': all_scores
-}
-report = report_error_rates([err_total], report)
+        plt.title('Mean Error per Category')
+        plt.scatter(corr_X, corr_Y, alpha=0.2)
+        plt.savefig(corr_scatter)
+        plt.close()
 
-# Error Rate Histogram
-plt.title('Error rate distribution')
-plt.hist(all_scores, cumulative=False)
-plt.savefig(report_dir.joinpath('images/error-distribution.png'))
-plt.close()
+        lg = stats.linregress(corr_X, corr_Y)
+        self.report['results']['linregress'] = {k:v for k,v in zip(lg._fields, lg)}
 
-# Error rate distribution
-corr_scatter = report_dir.joinpath('images/scatter-err-per-cat.png')
+        # Category Graphs
+        for k, v in self.report['results']['error_rates'].items():
+            if len(v['scores']) > 9 and k != 'all':
+                image_name = f"images/{k.replace(' ', '')}.png"
+                image_path = self.report_dir.joinpath(image_name)
+                grapher = DrawCategorySimilars(self.graph, k, image_path)
+                grapher.run()
 
-filtered_cat_scores = [x for x in err_by_category if x['mean'] < 1]
-corr_X = [s['mean'] for s in filtered_cat_scores]
-corr_Y = [len(s['scores']) for s in filtered_cat_scores]
+        # And, finally!
+        with open(self.report_dir.joinpath('report.json'), 'w') as f:
+            f.write(json.dumps(self.report))
 
-plt.title('Mean Error per Category')
-plt.scatter(corr_X, corr_Y, alpha=0.2)
-plt.savefig(corr_scatter)
-plt.close()
-
-lg = stats.linregress(corr_X, corr_Y)
-report['results']['linregress'] = {k:v for k,v in zip(lg._fields, lg)}
-
-# Category Graphs
-category_graphs = str()
-for x in err_by_category:
-    if len(x['scores']) > 9:
-        image_name = f"images/{x['cat'].replace(' ', '')}.png"
-        image_path = report_dir.joinpath(image_name)
-        grapher = DrawCategorySimilars(graph, x['cat'], image_path)
-        grapher.run()
-
-# And, finally!
-with open(report_dir.joinpath('report.json'), 'w') as f:
-    f.write(json.dumps(report))
+if __name__ == '__main__':
+    report = Report()
+    report.run()
