@@ -9,9 +9,7 @@ class DrawCategorySimilars:
         self.image_path = image_path
 
     def get_category(self):
-        for n in self.graph.get_nodes()['Category'].values():
-            if n.title == self.category_name:
-                return n
+        return self.graph[self.category_name]
 
     def get_connected(self, N :list, data :dict):
         """
