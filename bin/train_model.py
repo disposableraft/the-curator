@@ -3,7 +3,6 @@ import json
 import gensim, logging
 from smart_open import open
 import utils
-import constants as c
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
@@ -16,32 +15,30 @@ class Sentences(object):
             for line in open(os.path.join(self.dirname, fname), 'r'):
                 yield line.split()
 
-params = c.config['params']
-
-sentences = Sentences(c.TRAIN)
-
-model = gensim.models.Word2Vec(
-        sentences,
-        min_count=params['min_count'],
-        workers=params['workers'],
-        sg=params['sg'],
-        iter=params['epochs'],
-        window=5
-    )
-
-model.save(str(c.CURRENT.joinpath('word2vec.pickle')))
-
-training_notes = {
-    'total_train_time': model.total_train_time,
-    'epochs': model.epochs,
-    'size': model.vector_size,
-    'sg': model.sg,
-    'workers': model.workers,
-    'window': model.window,
-    'wv': {
-        'vocab_length': len(model.wv.vocab),
+def run(config):
+    sentences = Sentences(config['train_dir'])
+    model = gensim.models.Word2Vec(
+            sentences,
+            min_count=config['min_count'],
+            workers=config['workers'],
+            sg=config['sg'],
+            iter=config['epochs'],
+            window=5,
+            size=config['size']
+        )
+    model_path = os.path.join(config['version_dir'], 'word2vec.pickle')
+    model.save(model_path)
+    training_notes = {
+        'total_train_time': model.total_train_time,
+        'epochs': model.epochs,
+        'size': model.vector_size,
+        'sg': model.sg,
+        'workers': model.workers,
+        'window': model.window,
+        'wv': {
+            'vocab_length': len(model.wv.vocab),
+        }
     }
-}
 
-with open(c.CURRENT.joinpath('training-notes.json'), 'w') as f:
-    f.write(json.dumps(training_notes))
+    with open(os.path.join(config['version_dir'], 'training-notes.json'), 'w') as f:
+        f.write(json.dumps(training_notes))

@@ -1,4 +1,3 @@
-import constants
 from pygraphviz import AGraph
 import utils
 

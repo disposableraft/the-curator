@@ -1,17 +1,19 @@
 import constants
 import utils
-from pathlib import Path
 import pandas as pd
 from graph import Graph
 from artist import Artist
 from exhibition import Exhibition
 
 class Moma:
-    def __init__(self, dataframe):
-        self.df = dataframe
+    def __init__(self, dataframe_path):
+        self.df = self.read_csv(dataframe_path)
 
     def list_exhibitions(self):
         return list(self.df.ExhibitionID.unique())
+    
+    def read_csv(self, path):
+        return pd.read_csv(path, encoding="ISO-8859-1")
 
     def graph_exhibition(self, graph, ex_number):
         # Get the group of rows with `number` and have the artist role.
@@ -41,16 +43,11 @@ class Moma:
             graph.add_edge(ex_node.id, artist_node)
 
         return graph
-
-
-path = constants.MOMA_EXHIBITIONS_CSV
-moma = Moma(pd.read_csv(path, encoding="ISO-8859-1"))
-
-graph = Graph()
-
-for exhibition_number in moma.list_exhibitions():
-    moma.graph_exhibition(graph, exhibition_number)
-
-fn = utils.save_graph(graph, 'import.pickle')
-
-print(f'Imported MoMA Exhibitions data to {fn}')
+    
+def run(config):
+    moma = Moma(constants.MOMA_EXHIBITIONS_CSV)
+    graph = Graph()
+    for exhibition_number in moma.list_exhibitions():
+        moma.graph_exhibition(graph, exhibition_number)
+    fn = utils.save_graph(graph, 'import.pickle', config)
+    print(f'Imported MoMA Exhibitions data to {fn}')

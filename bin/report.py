@@ -3,14 +3,14 @@ import json
 import utils
 from scipy import stats
 import matplotlib.pyplot as plt
-import constants as c
 from draw_category_similars import DrawCategorySimilars
 
 class Report:
-    def __init__(self, report_dir=c.CURRENT, version=c.VERSION_NUMBER):
-        self.report_dir = report_dir
-        self.version = version
-        self.graph = utils.load_graph('similar-labeled-import.pickle')
+    def __init__(self, config):
+        self.config = config
+        self.report_dir = os.path.join(self.config['version_dir'], 'reports')
+        self.version = self.config['version']
+        self.graph = utils.load_graph('similar-labeled-import.pickle', config)
         types = self.graph.get_nodes()
         self.categories = types['Category'].values()
         self.exhibitions = types['Exhibition']
@@ -82,9 +82,10 @@ class Report:
     def run(self):
         # Yolo
         try:
-            os.mkdir(self.report_dir.joinpath('images'))
-        except FileExistsError:
-            print(f'Directory exists: {self.report_dir}/images')
+            os.mkdir(self.report_dir)
+            os.mkdir(f'{self.report_dir}/images')
+        except FileExistsError as err:
+            print(f'Warning: {err}')
 
         # Labeled and Unlabeled
         labeled_artists = utils.get_labeled_nodes(self.categories)
@@ -103,7 +104,8 @@ class Report:
 
         # Open model's report
         # TODO the model provides some useful stats on vocab, etc
-        with open(c.CURRENT.joinpath('training-notes.json'), 'r') as f:
+        training_notes_path = os.path.join(self.config['version_dir'], 'training-notes.json')
+        with open(training_notes_path, 'r') as f:
             model_notes = json.loads(f.read())
 
         self.report['model']['sg'] = model_notes['sg']
@@ -118,11 +120,11 @@ class Report:
         # Error Rate Histogram
         plt.title('Error rate distribution')
         plt.hist(self.report['results']['error_rates']['all']['scores'], cumulative=False)
-        plt.savefig(self.report_dir.joinpath('images/error-distribution.png'))
+        plt.savefig(os.path.join(self.report_dir, 'images/error-distribution.png'))
         plt.close()
 
         # Error rate distribution
-        corr_scatter = self.report_dir.joinpath('images/scatter-err-per-cat.png')
+        corr_scatter = os.path.join(self.report_dir, 'images/scatter-err-per-cat.png')
 
         filtered_cat_scores = [v for k, v in self.report['results']['error_rates'].items() if v['mean'] < 1 and k != 'all']
         corr_X = [s['mean'] for s in filtered_cat_scores]
@@ -140,14 +142,14 @@ class Report:
         for k, v in self.report['results']['error_rates'].items():
             if len(v['scores']) > 9 and k != 'all':
                 image_name = f"images/{k.replace(' ', '')}.png"
-                image_path = self.report_dir.joinpath(image_name)
+                image_path = os.path.join(self.report_dir, image_name)
                 grapher = DrawCategorySimilars(self.graph, k, image_path)
                 grapher.run()
 
         # And, finally!
-        with open(self.report_dir.joinpath('report.json'), 'w') as f:
+        with open(os.path.join(self.report_dir, 'report.json'), 'w') as f:
             f.write(json.dumps(self.report))
 
-if __name__ == '__main__':
-    report = Report()
+def run(config):
+    report = Report(config)
     report.run()

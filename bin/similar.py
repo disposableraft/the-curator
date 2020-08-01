@@ -1,20 +1,18 @@
+import os
 import utils
-import constants as c
 from graph import Node
 from gensim.models import Word2Vec
 
-model = Word2Vec.load(str(c.CURRENT.joinpath('word2vec.pickle')))
+def run(config):
+    model_path = os.path.join(config['version_dir'], 'word2vec.pickle')
+    model = Word2Vec.load(model_path)
+    graph = utils.load_graph('labeled-import.pickle', config)
+    artists = graph.get_nodes()['Artist'].values()
 
-graph = utils.load_graph('labeled-import.pickle')
+    for node in artists:
+        try:
+            node.similar = model.wv.most_similar(node.id, topn=config['topn'])
+        except KeyError as err:
+            print(f'Error selecting similar artist: {err}')
 
-nodes_of_type = graph.get_nodes()
-artists = nodes_of_type['Artist'].items()
-
-for _token, node in artists:
-    try:
-        # Top ten is sort of arbitrary. Is there a way to select by similarity?
-        node.similar = model.wv.most_similar(node.id, topn=10)
-    except KeyError as err:
-        print(f'Error selecting similar artist: {err}')
-
-utils.save_graph(graph, 'similar-labeled-import.pickle')
+    utils.save_graph(graph, 'similar-labeled-import.pickle', config)

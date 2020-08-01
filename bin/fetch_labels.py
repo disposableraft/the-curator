@@ -1,11 +1,12 @@
+import os
 import time
+import json
 import utils
-import constants as c
 from category import Category
 from wikidata import Wikidata
 
 class FetchLabels:
-    def __init__(self, nodes, graph):
+    def __init__(self, nodes, graph, config):
         """
         Fetch labels from Wikidata
 
@@ -16,6 +17,7 @@ class FetchLabels:
         """
         self.nodes = nodes
         self.graph = graph
+        self.config = config
         self.total_nodes = len(nodes)
         self.progress = 0
         self.edges_added = 0
@@ -26,21 +28,22 @@ class FetchLabels:
 
     def get_report(self):
         return {
-            'total_nodes' : self.total_nodes,
+            'total_nodes': self.total_nodes,
             'progress': self.progress,
             'edges_added': self.edges_added,
-            'categories_added': self.categories_added,
-            'unupdated': self.unupdated,
-            'artists_updated': self.artists_updated,
-            'unlabled': self.unupdated,
+            'categories_added': list(self.categories_added),
+            'unupdated': list(self.unupdated),
+            'artists_updated': list(self.artists_updated),
+            'unlabled': list(self.unupdated),
         }
 
     def save_tmp_file(self, obj, name):
-        utils.write(c.CURRENT.joinpath(name), obj)
+        path = os.path.join(self.config['version_dir'], name)
+        utils.write(path, obj)
 
     def run(self):
         for node in self.nodes:
-            time.sleep(0.5)
+            time.sleep(1)
             self.progress += 1
             
             if self.progress % 50 == 0:
@@ -70,5 +73,24 @@ class FetchLabels:
             
         return self.graph, self.get_report()
 
+def run(config):
+    report_path = os.path.join(config['version_dir'], 'fetch-report.json')
 
+    graph = utils.load_graph('import.pickle', config)
 
+    nodes = [value for value in graph
+                    if value.type == 'Artist'
+                    and value.wikidataID != None
+                    and value.degrees > 2]
+
+    # For rerunning the process without restarting, use
+    # the nodes from the report, using `report_path` above.
+    # nodes = [graph[tk] for tk in report['unupdated']]
+
+    fetch = FetchLabels(nodes, graph, config)
+    (new_graph, report) = fetch.run()
+
+    utils.save_graph(new_graph, 'labeled-import.pickle', config)
+
+    with open(report_path, 'wb') as f:
+        f.write(json.dumps(report))
