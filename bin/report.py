@@ -41,6 +41,8 @@ class Report:
         for category in self.categories:
             if category.degrees > 1:
                 cat_score = self.score_category(category)
+                if cat_score == None:
+                    continue
                 error_rates[category.id] = cat_score
                 error_rates['all']['scores'] += cat_score['scores']
         error_rates['all']['mean'] = self.mean(error_rates['all']['scores'])
@@ -93,7 +95,7 @@ class Report:
         unlabeled_artists = artists_degree_gt_1 ^ labeled_artists
 
         # Graph name
-        self.report['graph']['vertices'] = self.graph.count_edges()
+        self.report['graph']['edges'] = self.graph.count_edges()
         self.report['graph']['nodes'] = self.graph.count_nodes()
         self.report['graph']['density'] = self.graph.density()
         self.report['graph']['exhibitions']  = len(self.exhibitions)
@@ -113,6 +115,7 @@ class Report:
         self.report['model']['size'] = model_notes['size']
         # self.report['model']['min_count'] = model_notes['min_count']
         self.report['model']['epochs'] = model_notes['epochs']
+        self.report['model']['topn'] = self.config['topn']
 
         # Error rates per category
         self.report['results']['error_rates'] = self.get_category_error_rates()
