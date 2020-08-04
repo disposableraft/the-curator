@@ -15,7 +15,7 @@ class Main:
         self.train_dir = c.DATA.joinpath(f'train-{data_version}')
         self.version_dir = c.DATA.joinpath(f'versions/{self.version}')
         self.config_file = self.version_dir.joinpath('config.json')
-        
+
         if self.version_exists():
             print(f'Loading version: {self.version}')
             self.config = self.load_config()
@@ -45,7 +45,7 @@ class Main:
         with open(self.config_file, 'r') as f:
             data = json.loads(f.read())
         return data
-    
+
     def update_config(self, updates):
         """
         Update the config dict and save it to disk.
@@ -61,6 +61,8 @@ class Main:
             self.version_dir.mkdir()
         except FileExistsError as err:
             print(f'{err}')
+            if not self.version_dir.exists():
+                FileExistsError
         config = {
             "version": self.version,
             "version_dir": str(self.version_dir),
@@ -76,7 +78,7 @@ class Main:
         with open(self.config_file, 'w') as f:
             f.write(json.dumps(config))
         return config
-    
+
     def save_config(self):
         with open(self.config_file, 'w') as f:
             f.write(json.dumps(self.config))
@@ -121,6 +123,3 @@ class Main:
         """
         report.run(self.config)
 
-
-m = Main('1.10')
-m.import_moma()
