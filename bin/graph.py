@@ -1,5 +1,6 @@
 import inspect
 import unittest
+import networkx
 from collections import deque
 
 class Node:
@@ -135,6 +136,9 @@ class Graph:
         density = (m * 2) / (n * (n - 1))
         return density
 
+    def prune(self, nodes):
+        for n in nodes:
+            self.remove_node(n)
 
 class TestGraph(unittest.TestCase):
     def test_init(self):
@@ -239,6 +243,16 @@ class TestGraph(unittest.TestCase):
         
         G.remove_node(n3)
         self.assertEqual(G[1].degrees, 1)
+        self.assertEqual(G.count_nodes(), 2)
+        self.assertEqual(G.count_edges(), 1)
+    
+    def test_prune(self):
+        n1 = Node(1)
+        n2 = Node(2)
+        n3 = Node(3)
+        G = Graph([n1, n2, n3])
+        G.add_edges(n1, [n2, n3, Node(4)])
+        G.prune([n2, n3])
         self.assertEqual(G.count_nodes(), 2)
         self.assertEqual(G.count_edges(), 1)
 
