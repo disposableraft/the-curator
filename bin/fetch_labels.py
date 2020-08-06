@@ -11,8 +11,8 @@ class FetchLabels:
         Fetch labels from Wikidata
 
         `nodes` is expected to include a `wikidataID`.
-        
-        `graph` is expected to contain the nodes which are being 
+
+        `graph` is expected to contain the nodes which are being
             updated with labels.
         """
         self.nodes = nodes
@@ -33,7 +33,7 @@ class FetchLabels:
             'edges_added': self.edges_added,
             'categories_added': list(self.categories_added),
             'unupdated': list(self.unupdated),
-            'artists_updated': list(self.artists_updated),
+            'artists_updated': self.artists_updated,
             'unlabled': list(self.unupdated),
         }
 
@@ -45,7 +45,7 @@ class FetchLabels:
         for node in self.nodes:
             time.sleep(1)
             self.progress += 1
-            
+
             if self.progress % 50 == 0:
                 print(f'Progress: {self.progress} / {self.total_nodes}. Updated: {self.artists_updated}. Unupdated: {len(self.unupdated)}. Unlabeled: {len(self.unlabeled)}')
                 self.save_tmp_file(self.graph, 'tmp-graph.pickle')
@@ -70,7 +70,7 @@ class FetchLabels:
                     self.graph.add_edge(label, node)
                     self.edges_added += 1
                 self.artists_updated += 1
-            
+
         return self.graph, self.get_report()
 
 def run(config):
