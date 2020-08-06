@@ -1,6 +1,5 @@
 import inspect
 import unittest
-import networkx
 from collections import deque
 
 class Node:
