@@ -2,6 +2,7 @@ import json
 import utils
 import constants as c
 import import_exhibitions
+import prune_graph
 import report
 import export_corpus
 import train_model
@@ -10,6 +11,11 @@ import similar
 
 class Main:
     def __init__(self, version, combinations_r=5, topn=10, sg=0, workers=4, size=100, min_count=1, epochs=8):
+        """
+        Create or load a version, and perform operations on the data.
+        
+        m = Main('5.0.0')
+        """
         self.version = version
         data_version = version.split('.')[0]
         self.train_dir = c.DATA.joinpath(f'train-{data_version}')
@@ -33,15 +39,20 @@ class Main:
 
 
     def version_exists(self):
+        """
+        Checks if the version exists.
+        """
         if not self.train_dir.exists():
             print(f'WARNING: No training data found for {self.version}')
-            return False
         if not self.config_file.exists():
             print(f'No config file found for {self.version}')
             return False
         return True
 
     def load_config(self):
+        """
+        Load the configuration file from disk.
+        """
         with open(self.config_file, 'r') as f:
             data = json.loads(f.read())
         return data
@@ -54,9 +65,13 @@ class Main:
         """
         for key, value in updates:
             self.config[key] = value
+        # BUG config saves are not persisted?
         self.save_config()
 
     def create_version(self):
+        """
+        Create a new version, including a directory and config file.
+        """
         try:
             self.version_dir.mkdir()
         except FileExistsError as err:
@@ -80,14 +95,23 @@ class Main:
         return config
 
     def save_config(self):
+        """
+        Write the config file to disk.
+        """
         with open(self.config_file, 'w') as f:
             f.write(json.dumps(self.config))
 
-    def import_moma(self):
+    def import_exhibitions(self):
         """
-        Import exhibitions and artists from MoMA dataset
+        Import exhibitions and artists.
         """
         import_exhibitions.run(self.config)
+    
+    def prune_graph(self):
+        """
+        Delete notes that have too few or too many degrees.
+        """
+        prune_graph.run(self.config)
 
     def export_corpus(self):
         """
