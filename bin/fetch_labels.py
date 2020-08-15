@@ -73,24 +73,30 @@ class FetchLabels:
 
         return self.graph, self.get_report()
 
-def run(config):
-    report_path = os.path.join(config['version_dir'], 'fetch-report.json')
+class LabelArtists:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
 
-    graph = utils.load_graph('import.pickle', config)
+    def proceed(self):
+        config = self.pipeline.version.config
+        report_path = os.path.join(config['version_dir'], 'fetch-report.json')
 
-    nodes = [value for value in graph
-                    if value.type == 'Artist'
-                    and value.wikidataID != None
-                    and value.degrees > 2]
+        graph = utils.load_graph('import.pickle', config)
 
-    # For rerunning the process without restarting, use
-    # the nodes from the report, using `report_path` above.
-    # nodes = [graph[tk] for tk in report['unupdated']]
+        nodes = [value for value in graph
+                        if value.type == 'Artist'
+                        and value.wikidataID != None
+                        and value.degrees > 2]
 
-    fetch = FetchLabels(nodes, graph, config)
-    (new_graph, report) = fetch.run()
+        # For rerunning the process without restarting, use
+        # the nodes from the report, using `report_path` above.
+        # nodes = [graph[tk] for tk in report['unupdated']]
 
-    utils.save_graph(new_graph, 'labeled-import.pickle', config)
+        fetch = FetchLabels(nodes, graph, config)
+        (new_graph, report) = fetch.run()
 
-    with open(report_path, 'wb') as f:
-        f.write(json.dumps(report))
+        utils.save_graph(new_graph, 'labeled-import.pickle', config)
+
+        with open(report_path, 'wb') as f:
+            f.write(json.dumps(report))
+        self.pipeline.update() 

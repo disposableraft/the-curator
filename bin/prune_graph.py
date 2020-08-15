@@ -1,18 +1,36 @@
 import utils
 
-def run(config):
-    """
-    Delete nodes from graph.
-    """
-    graph = utils.load_graph('import.pickle', config)
+class Prune1:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
 
-    exhibitions = graph.get_nodes()['Exhibition'].values()
-    artists = graph.get_nodes()['Artist'].values()
+    def proceed(self):
+        config = self.pipeline.version.config
+        graph = utils.load_graph('labeled-import.pickle', config)
 
-    del_artists = [a for a in artists if a.degrees < 3]
-    del_exhibitions = [e for e in exhibitions if e.degrees < 2 or e.degrees > 50]
+        nodes_by_type = graph.get_nodes()
+        exhibitions = nodes_by_type['Exhibition'].values()
+        artists = nodes_by_type['Artist'].values()
 
-    print(f'Pruning {len(del_artists + del_exhibitions)} nodes.')
+        # Artists with fewer than 3 exhibitions
+        graph.prune([a for a in artists if a.degrees < 3])
+        # Exhibitions with fewer than 2 artists
+        graph.prune([e for e in exhibitions if e.degrees < 2])
+        
+        utils.save_graph(graph, 'labeled-import-prune', config)
+        
+        self.pipeline.update() 
 
-    graph.prune(del_artists + del_exhibitions)
-    utils.save_graph(graph, 'import.pickle', config)
+class Prune2:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
+
+    def proceed(self):
+        config = self.pipeline.version.config
+        graph = utils.load_graph('labeled-import.pickle', config)
+        artists = graph.get_nodes()['Artist'].values()
+        # Artists without a category
+        graph.prune([a for a in artists if len(a.categories) < 1])
+        utils.save_graph(graph, 'labeled-import-prune', config)
+        self.pipeline.update() 
+

@@ -5,7 +5,7 @@ from scipy import stats
 import matplotlib.pyplot as plt
 from draw_category_similars import DrawCategorySimilars
 
-class Report:
+class RunReport:
     def __init__(self, config):
         self.config = config
         self.report_dir = os.path.join(self.config['version_dir'], 'reports')
@@ -74,7 +74,6 @@ class Report:
             return None
 
         return {
-            # 'cat': cat.id,
             'degrees': cat.degrees,
             'mean': self.mean(scores),
             'variance': self.variance(scores),
@@ -82,7 +81,6 @@ class Report:
         }
 
     def run(self):
-        # Yolo
         try:
             os.mkdir(self.report_dir)
             os.mkdir(f'{self.report_dir}/images')
@@ -104,18 +102,14 @@ class Report:
         self.report['graph']['unlabeled_artists']  = len(unlabeled_artists)
         self.report['graph']['labeled_artists']  = len(labeled_artists)
 
-        # Open model's report
-        # TODO the model provides some useful stats on vocab, etc
+        # Config
+        self.report['config'] = self.config
+
+        # Training data
         training_notes_path = os.path.join(self.config['version_dir'], 'training-notes.json')
         with open(training_notes_path, 'r') as f:
             model_notes = json.loads(f.read())
-
-        self.report['model']['sg'] = model_notes['sg']
-        self.report['model']['workers'] = model_notes['workers']
-        self.report['model']['size'] = model_notes['size']
-        # self.report['model']['min_count'] = model_notes['min_count']
-        self.report['model']['epochs'] = model_notes['epochs']
-        self.report['model']['topn'] = self.config['topn']
+        self.report['model'] = model_notes
 
         # Error rates per category
         self.report['results']['error_rates'] = self.get_category_error_rates()
@@ -141,7 +135,7 @@ class Report:
         lg = stats.linregress(corr_X, corr_Y)
         self.report['results']['linregress'] = {k:v for k,v in zip(lg._fields, lg)}
 
-        # Category Graphs
+        # Graphs
         for k, v in self.report['results']['error_rates'].items():
             if len(v['scores']) > 9 and k != 'all':
                 image_name = f"images/{k.replace(' ', '')}.png"
@@ -149,10 +143,15 @@ class Report:
                 grapher = DrawCategorySimilars(self.graph, k, image_path)
                 grapher.run()
 
-        # And, finally!
+        # Output JSON
         with open(os.path.join(self.report_dir, 'report.json'), 'w') as f:
             f.write(json.dumps(self.report))
 
-def run(config):
-    report = Report(config)
-    report.run()
+class Report:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
+
+    def proceed(self):
+        report = RunReport(self.pipeline.version.config)
+        report.run()
+        self.pipeline.update()

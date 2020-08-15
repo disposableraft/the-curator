@@ -51,35 +51,43 @@ Only labled terms from the MoMA and DOME datasets.
 ## Usage
 
 ```python
-"""
-Initialize a version.
+# Create or load an existing version.
+# Versions follow the format `<dataset>.<iteration>.<variation>`.
+>>> pipe = Pipeline('9.0.0')
 
-Arguments:
-    - combinations_r:  the length of each combination. See `itertools.combinations` and `Main.export_corpus`.
-    - topn: the number of similar artists. See `model.wv.most_similar`.
-    - sg: (0|1). 0 for CBOW. 1 for Skip-Gram. See `Word2Vec`.
-    - workers: training workers. See `Word2Vec`.
-    - size: the size of the vector. See `Word2Vec`.
-    - min_count: smallest count allowed for a term. See `Word2Vec`.
-    - epochs: word2vec epochs. See `Word2Vec`.
-"""
-m = Main('1.0')
+# The current state
+>>> pipe.get_state()
+<class 'import_exhibitions.ImportExhibitions'>
 
-# Import the moma exhibition csv into a graph
-m.import_moma()
+# Get the version configurations
+>>> pipe.version.config
+{'combinations_r': 5,
+ 'epochs': 5,
+ 'min_count': 1,
+ 'pos': 0,
+ 'sg': 1,
+ 'size': 100,
+ 'states': ['ImportExhibitions',
+            'Prune1',
+            'LabelArtists',
+            'Prune2',
+            'ExportCorpus',
+            'TrainModel',
+            'ApplySimilar',
+            'Report'],
+ 'topn': 5,
+ 'train_dir': 'data/train-9',
+ 'version': '9.0.0',
+ 'version_dir': 'data/versions/9.0.0',
+ 'workers': 5}
 
-# Export a corpus
-m.export_corpus()
+# Update the version configurations
+>>> pipe.version.update_config(
+  ('workers', 6), 
+  ('size', 200), 
+  ('sg', 0))
 
-# Train word2vec on corpus
-m.train_model()
-
-# Fetch labels (art historical movements) from Wikidata
-m.fetch_labels()
-
-# Update the graph with similar artists from word2vec
-m.apply_similars()
-
-# Generate a report, which includes mean error rates
-m.report()
+# Execute the current state and proceed to the next.
+>>> pipe.proceed()
 ```
+

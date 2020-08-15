@@ -88,16 +88,22 @@ class Moma:
             artists.append((row['DisplayName'], row['WikidataID']))
         return [(id, title, self.source), artists]
 
+class ImportExhibitions:
+    def __init__(self, pipeline):
+        self.pipeline = pipeline
 
-def run(config):
-    moma = Moma(constants.MOMA_EXHIBITIONS_CSV)
-    dome = Dome(
-        constants.DOME_ARTISTS_CSV,
-        constants.DOME_EXHIBITIONS_CSV
-        )
-    importer = Importer(moma, dome)
-    importer.run()
-    utils.save_graph(importer.graph, 'import.pickle', config)
+    def proceed(self):
+        print(f"Proceeding to execute import foo")
+        moma = Moma(constants.MOMA_EXHIBITIONS_CSV)
+        dome = Dome(
+            constants.DOME_ARTISTS_CSV,
+            constants.DOME_EXHIBITIONS_CSV
+            )
+        importer = Importer(moma, dome)
+        importer.run()
+        utils.save_graph(importer.graph, 'import.pickle', self.pipeline.version.config)
+        self.pipeline.update()    
+
 
 class TestImporter(unittest.TestCase):
     def test_importer_init(self):
