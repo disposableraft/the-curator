@@ -3,7 +3,7 @@ import time
 import json
 import utils
 from category import Category
-from wikidata import Wikidata
+from wikidata_source import Wikidata
 
 class FetchLabels:
     def __init__(self, nodes, graph, config):
