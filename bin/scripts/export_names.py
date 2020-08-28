@@ -17,11 +17,11 @@ pipe = Pipeline('2.2.0')
 graph = utils.load_graph('similar-labeled-import.pickle', pipe.version.config)
 
 # Construct two maps: of tokens to names, and the opposite.
-tokens_to_names = {graph[t].name: t for t in tokens}
+tokens_to_names = {t: graph[t].name for t in tokens}
 with open(tokens_to_names_file, 'w', encoding='utf8') as f:
   f.write(json.dumps(tokens_to_names))
 
-names_to_tokens = {t: graph[t].name for t in tokens}
+names_to_tokens = {graph[t].name: t for t in tokens}
 with open(names_to_tokens_file, 'w', encoding='utf8') as f:
   f.write(json.dumps(names_to_tokens))
 
