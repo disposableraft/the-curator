@@ -1,0 +1,5 @@
+gensim
+pygraphviz
+pandas
+scipy
+matplotlib
