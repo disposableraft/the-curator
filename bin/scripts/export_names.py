@@ -6,26 +6,30 @@ from gensim.models import Word2Vec
 import utils
 from pipeline import Pipeline
 
-tokens_to_names_file = '/Users/khanda/writing1/projects/the-curator/data/versions/2.2.0/tokens_to_names.json'
-names_to_tokens_file = '/Users/khanda/writing1/projects/the-curator/data/versions/2.2.0/names_to_tokens.json'
-names_file = '/Users/khanda/writing1/projects/the-curator/data/versions/2.2.0/names.json'
+version = '1.8.2'
 
-model = Word2Vec.load('/Users/khanda/writing1/projects/the-curator/data/versions/2.2.0/word2vec.pickle')
+top_12_map_file = f'/Users/khanda/writing1/projects/the-curator/data/versions/{version}/top_12_map.json'
+names_file = f'/Users/khanda/writing1/projects/the-curator/data/versions/{version}/names.json'
+
+model = Word2Vec.load(f'/Users/khanda/writing1/projects/the-curator/data/versions/{version}/word2vec.pickle')
 tokens = [x for x in model.wv.vocab]
 
-pipe = Pipeline('2.2.0')
+pipe = Pipeline(version)
 graph = utils.load_graph('similar-labeled-import.pickle', pipe.version.config)
 
-# Construct two maps: of tokens to names, and the opposite.
-tokens_to_names = {t: graph[t].name for t in tokens}
-with open(tokens_to_names_file, 'w', encoding='utf8') as f:
-  f.write(json.dumps(tokens_to_names))
+# Export a map of top 12 similar artists for each artist.
+# { "Jill Boo": ["Jane Fan", "Bill Pen" ...]}
+top_12_map = {}
 
-names_to_tokens = {graph[t].name: t for t in tokens}
-with open(names_to_tokens_file, 'w', encoding='utf8') as f:
-  f.write(json.dumps(names_to_tokens))
+for token in tokens:
+  similar_tokens = model.wv.most_similar(token, topn=12)
+  similar_names = [graph[t].name for (t, _) in similar_tokens]
+  top_12_map[graph[token].name] = similar_names
 
-# Construct a list of names.
+with open(top_12_map_file, 'w', encoding='utf8') as f:
+  f.write(json.dumps(top_12_map))
+
+# Export a list of names.
 names = [graph[t].name for t in tokens]
 with open(names_file, 'w', encoding='utf8') as f:
   f.write(json.dumps(names))
